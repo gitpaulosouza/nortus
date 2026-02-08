@@ -3,8 +3,8 @@ import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/core/routes/app_routes.dart';
 import 'package:nortus/src/core/themes/app_theme.dart';
 
-void main() {
-  setupServiceLocator();
+void main() async {
+  await configureDependencies();
   runApp(const MyApp());
 }
 
