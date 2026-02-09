@@ -8,6 +8,6 @@ class SplashController {
   Future<String> resolveRoute() async {
     await Future.delayed(const Duration(seconds: 3));
     final isLoggedIn = await localStorage.isLoggedIn();
-    return isLoggedIn ? '/' : '/login';
+    return isLoggedIn ? '/home' : '/login';
   }
 }

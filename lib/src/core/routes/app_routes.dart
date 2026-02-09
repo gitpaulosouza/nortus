@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nortus/src/features/auth/presentation/pages/login_page.dart';
+import 'package:nortus/src/features/home/presentation/pages/home_page.dart';
 import 'package:nortus/src/features/splash/presentation/pages/splash_page.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -13,12 +14,12 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/login',
       name: 'login',
-      builder: (context, state) => const SizedBox.shrink(),
+      builder: (context, state) => const LoginPage(),
     ),
     GoRoute(
       path: '/home',
       name: 'home',
-      builder: (context, state) => const SizedBox.shrink(),
+      builder: (context, state) => const HomePage(),
     ),
   ],
 );
