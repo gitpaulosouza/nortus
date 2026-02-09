@@ -14,10 +14,8 @@ class Validators {
   static bool isValidPassword(String password) {
     if (password.length < 8) return false;
 
-    // Check for at least one letter
     final hasLetter = RegExp(r'[a-zA-Z]').hasMatch(password);
 
-    // Check for at least one number
     final hasNumber = RegExp(r'[0-9]').hasMatch(password);
 
     return hasLetter && hasNumber;
