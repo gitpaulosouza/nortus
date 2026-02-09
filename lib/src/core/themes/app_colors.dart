@@ -17,4 +17,8 @@ class AppColors {
   static const Color newsTimeText = Color(0xFF7B7B7B);
   static const Color appNameHighlight = Color(0xFF1876D2);
   static const Color success = Color(0xFF81DC96);
+  static const Color favoriteButtonBackground = Color(0xFFFAFAFA);
+  static const Color mostRecentSectionBackground = Color(0xFFF9F9F9);
+  static const Color mostRecentSectionMarker = Color(0xFFE5E5E5);
+  static const Color mostRecentButtonBorder = Color(0xFF163C43);
 }
