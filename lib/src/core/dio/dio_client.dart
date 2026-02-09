@@ -7,10 +7,10 @@ class DioClient {
   DioClient() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://api.example.com',
+        baseUrl: 'https://flutter-challenge.wiremockapi.cloud',
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
-        contentType: 'application/json',
+        contentType: Headers.jsonContentType,
         headers: {
           'User-Agent': 'Nortus/1.0',
         },

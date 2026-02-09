@@ -4,21 +4,21 @@ abstract class AppError implements Exception {
 }
 
 class NetworkError extends AppError {
-  NetworkError(String message) : super(message);
+  NetworkError(super.message);
 }
 
 class ServerError extends AppError {
-  ServerError(String message) : super(message);
+  ServerError(super.message);
 }
 
 class UnknownError extends AppError {
-  UnknownError(String message) : super(message);
+  UnknownError(super.message);
 }
 
 class ValidationError extends AppError {
-  ValidationError(String message) : super(message);
+  ValidationError(super.message);
 }
 
 class NotFoundError extends AppError {
-  NotFoundError(String message) : super(message);
+  NotFoundError(super.message);
 }
