@@ -51,9 +51,8 @@ class _LoginBottomSheetContent extends StatelessWidget {
             }
           });
         } else if (state.isSuccess) {
-          // Login successful - authenticate and navigate
           SnackbarHelper.showSuccess(context, 'Login realizado com sucesso!');
-          context.go('/home');
+          context.go('/news');
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
