@@ -33,12 +33,41 @@ class NewsDatasourceImpl implements NewsDatasource {
         response.data as Map<String, dynamic>,
       );
       return Right(responseModel);
-    } on DioException {
-      return Left(NetworkError('Erro de rede. Tente novamente.'));
+    } on DioException catch (e) {
+      // Try to extract error message from response
+      final errorMessage = _extractErrorMessage(e);
+      return Left(NetworkError(errorMessage));
     } catch (e) {
       return Left(
         UnknownError('Ops! Aconteceu alguma coisa, tente novamente.'),
       );
     }
+  }
+
+  String _extractErrorMessage(DioException exception) {
+    try {
+      final responseData = exception.response?.data;
+
+      // Check if response data contains error message
+      if (responseData is Map<String, dynamic>) {
+        final message = responseData['message'] as String?;
+        if (message != null && message.isNotEmpty) {
+          return message;
+        }
+      }
+
+      // Check if response body is a string (WireMock quota message)
+      if (exception.response?.data is String) {
+        final bodyMessage = exception.response?.data as String;
+        if (bodyMessage.contains('Monthly request quota') ||
+            bodyMessage.contains('quota')) {
+          return bodyMessage;
+        }
+      }
+    } catch (_) {
+      // If parsing fails, use generic message
+    }
+
+    return 'Erro de rede. Tente novamente.';
   }
 }
