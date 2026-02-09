@@ -29,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         isPasswordValid: false,
         isConfirmPasswordValid: false,
         showPasswordField: false,
+        isRegistrationSuccess: false,
         clearError: true,
       ),
     );
@@ -132,7 +133,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       },
       (_) {
-        emit(state.copyWith(isSubmitting: false, isSuccess: true));
+        if (state.mode == AuthFormMode.login) {
+          // Login successful - authenticate user
+          emit(state.copyWith(isSubmitting: false, isSuccess: true));
+        } else {
+          // Registration successful - do NOT authenticate, return to login
+          emit(
+            state.copyWith(
+              isSubmitting: false,
+              isRegistrationSuccess: true,
+              isSuccess: false,
+            ),
+          );
+        }
       },
     );
   }

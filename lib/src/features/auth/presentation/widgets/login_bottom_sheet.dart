@@ -5,6 +5,7 @@ import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/utils/snackbar_helper.dart';
 import 'package:nortus/src/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:nortus/src/features/auth/presentation/bloc/auth_event.dart';
 import 'package:nortus/src/features/auth/presentation/bloc/auth_form_mode.dart';
 import 'package:nortus/src/features/auth/presentation/bloc/auth_state.dart';
 import 'package:nortus/src/features/auth/presentation/widgets/auth_bottom_links.dart';
@@ -39,14 +40,19 @@ class _LoginBottomSheetContent extends StatelessWidget {
       listener: (context, state) {
         if (state.errorMessage != null) {
           SnackbarHelper.showError(context, state.errorMessage!);
-        } else if (state.isSuccess) {
-          final message =
-              state.mode == AuthFormMode.login
-                  ? 'Login successful!'
-                  : 'Registration successful!';
-          SnackbarHelper.showSuccess(context, message);
+        } else if (state.isRegistrationSuccess) {
+          // Registration successful - show message and return to login mode
+          SnackbarHelper.showSuccess(context, 'Conta criada com sucesso!');
 
-          // Navigate to home
+          // Return to login mode after a brief delay
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (context.mounted) {
+              context.read<AuthBloc>().add(AuthModeChanged(AuthFormMode.login));
+            }
+          });
+        } else if (state.isSuccess) {
+          // Login successful - authenticate and navigate
+          SnackbarHelper.showSuccess(context, 'Login realizado com sucesso!');
           context.go('/home');
         }
       },
