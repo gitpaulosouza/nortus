@@ -1,6 +1,9 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/features/auth/presentation/pages/login_page.dart';
-import 'package:nortus/src/features/home/presentation/pages/home_page.dart';
+import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
+import 'package:nortus/src/features/news/presentation/pages/news_page.dart';
 import 'package:nortus/src/features/splash/presentation/pages/splash_page.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -17,9 +20,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const LoginPage(),
     ),
     GoRoute(
-      path: '/home',
-      name: 'home',
-      builder: (context, state) => const HomePage(),
+      path: '/news',
+      name: 'news',
+      builder:
+          (context, state) => BlocProvider(
+            create: (_) => getIt<NewsBloc>(),
+            child: const NewsPage(),
+          ),
     ),
   ],
 );
