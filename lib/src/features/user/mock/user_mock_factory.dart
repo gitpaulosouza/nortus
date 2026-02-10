@@ -8,7 +8,7 @@ class UserMockFactory {
       name: 'Pedro Silva',
       email: 'pedrosilva@gmail.com',
       language: 'pt-BR',
-      dateFormat: 'DD/MM/AA',
+      dateFormat: 'DD/MM/YYYY',
       timezone: 'America/Sao_Paulo',
       address: UserAddressModel(
         zipCode: '50781-000',
