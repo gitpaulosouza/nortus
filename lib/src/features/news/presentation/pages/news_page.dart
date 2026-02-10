@@ -14,6 +14,7 @@ import 'package:nortus/src/features/news/presentation/widgets/most_recent_sectio
 import 'package:nortus/src/features/news/presentation/widgets/load_more_button.dart';
 import 'package:nortus/src/features/news/presentation/widgets/news_search_bar.dart';
 import 'package:nortus/src/features/news/presentation/widgets/search_news_list_item.dart';
+import 'package:nortus/src/features/news/presentation/widgets/news_category_menu.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -24,6 +25,7 @@ class NewsPage extends StatefulWidget {
 
 class _NewsPageState extends State<NewsPage> {
   late final ScrollController _scrollController;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -43,63 +45,72 @@ class _NewsPageState extends State<NewsPage> {
     context.read<NewsBloc>().add(const NewsLoadMoreRequested());
   }
 
+  void _openCategoryMenu() {
+    _scaffoldKey.currentState?.openDrawer();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return NortusScaffold(
-      activeItem: NortusNavItem.news,
-      body: BlocConsumer<NewsBloc, NewsState>(
-        listener: (context, state) {
-          if (state.lastFavoriteToggledId != null &&
-              state.lastFavoriteWasAdded != null) {
-            if (state.lastFavoriteWasAdded!) {
-              SnackbarHelper.showSuccess(
-                context,
-                'Você favoritou esta notícia',
-                subtitle: 'Você pode encontrá-la no perfil',
-              );
-            } else {
-              SnackbarHelper.showSuccess(
-                context,
-                'Você removeu esta notícia dos favoritos',
-                subtitle: 'Ela não aparece mais no perfil',
+    return Scaffold(
+      key: _scaffoldKey,
+      drawer: const NewsCategoryMenu(),
+      body: NortusScaffold(
+        activeItem: NortusNavItem.news,
+        body: BlocConsumer<NewsBloc, NewsState>(
+          listener: (context, state) {
+            if (state.lastFavoriteToggledId != null &&
+                state.lastFavoriteWasAdded != null) {
+              if (state.lastFavoriteWasAdded!) {
+                SnackbarHelper.showSuccess(
+                  context,
+                  'Você favoritou esta notícia',
+                  subtitle: 'Você pode encontrá-la no perfil',
+                );
+              } else {
+                SnackbarHelper.showSuccess(
+                  context,
+                  'Você removeu esta notícia dos favoritos',
+                  subtitle: 'Ela não aparece mais no perfil',
+                );
+              }
+              context.read<NewsBloc>().add(
+                const NewsFavoriteFeedbackConsumed(),
               );
             }
-            context.read<NewsBloc>().add(const NewsFavoriteFeedbackConsumed());
-          }
 
-          if (state.error != null && state.items.isNotEmpty) {
-            SnackbarHelper.showError(
-              context,
-              'Erro ao carregar notícias',
-              subtitle: state.error!.message,
+            if (state.error != null && state.items.isNotEmpty) {
+              SnackbarHelper.showError(
+                context,
+                'Erro ao carregar notícias',
+                subtitle: state.error!.message,
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state.isLoading && state.items.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state.items.isEmpty && state.error != null) {
+              return _buildEmptyErrorState(context);
+            }
+
+            final isSearchActive = state.searchQuery.isNotEmpty;
+            final displayItems = state.visibleItems;
+
+            return Column(
+              children: [
+                NewsSearchBar(onMenuPressed: _openCategoryMenu),
+                Expanded(
+                  child:
+                      isSearchActive
+                          ? _buildSearchResults(context, state)
+                          : _buildDefaultContent(context, state, displayItems),
+                ),
+              ],
             );
-          }
-        },
-        builder: (context, state) {
-          if (state.isLoading && state.items.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state.items.isEmpty && state.error != null) {
-            return _buildEmptyErrorState(context);
-          }
-
-          final isSearchActive = state.searchQuery.isNotEmpty;
-          final displayItems =
-              isSearchActive ? state.visibleItems : state.items;
-
-          return Column(
-            children: [
-              const NewsSearchBar(),
-              Expanded(
-                child:
-                    isSearchActive
-                        ? _buildSearchResults(context, state)
-                        : _buildDefaultContent(context, state, displayItems),
-              ),
-            ],
-          );
-        },
+          },
+        ),
       ),
     );
   }
