@@ -58,13 +58,13 @@ class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
 
       if (exception.response?.data is String) {
         final bodyMessage = exception.response?.data as String;
-        if (bodyMessage.contains('Monthly request quota') ||
-            bodyMessage.contains('quota')) {
+        if (bodyMessage.contains('quota') ||
+            bodyMessage.contains('exceeded') ||
+            bodyMessage.contains('limite')) {
           return bodyMessage;
         }
       }
-    } catch (_) {
-    }
+    } catch (_) {}
 
     return 'Erro de rede. Tente novamente.';
   }
