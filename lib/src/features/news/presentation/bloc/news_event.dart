@@ -31,3 +31,9 @@ class NewsFavoriteToggled extends NewsEvent {
 class NewsFavoriteFeedbackConsumed extends NewsEvent {
   const NewsFavoriteFeedbackConsumed();
 }
+
+class NewsCategorySelected extends NewsEvent {
+  final String category;
+
+  const NewsCategorySelected(this.category);
+}

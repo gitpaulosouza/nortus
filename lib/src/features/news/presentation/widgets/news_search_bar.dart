@@ -7,7 +7,9 @@ import 'package:nortus/src/features/news/presentation/bloc/news_event.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_state.dart';
 
 class NewsSearchBar extends StatefulWidget {
-  const NewsSearchBar({super.key});
+  final VoidCallback? onMenuPressed;
+
+  const NewsSearchBar({super.key, this.onMenuPressed});
 
   @override
   State<NewsSearchBar> createState() => _NewsSearchBarState();
@@ -78,13 +80,30 @@ class _NewsSearchBarState extends State<NewsSearchBar> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        SvgPicture.asset(
-          'assets/images/nortus_wordmark.svg',
-          height: 24,
-          colorFilter: const ColorFilter.mode(
-            AppColors.textPrimary,
-            BlendMode.srcIn,
-          ),
+        Row(
+          children: [
+            IconButton(
+              icon: SvgPicture.asset(
+                'assets/icons/menu.svg',
+                width: 24,
+                height: 24,
+                colorFilter: const ColorFilter.mode(
+                  AppColors.textPrimary,
+                  BlendMode.srcIn,
+                ),
+              ),
+              onPressed: widget.onMenuPressed,
+            ),
+            const SizedBox(width: 8),
+            SvgPicture.asset(
+              'assets/images/nortus_wordmark.svg',
+              height: 24,
+              colorFilter: const ColorFilter.mode(
+                AppColors.textPrimary,
+                BlendMode.srcIn,
+              ),
+            ),
+          ],
         ),
         IconButton(
           icon: const Icon(Icons.search, size: 28),
