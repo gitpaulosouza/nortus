@@ -21,4 +21,6 @@ class AppColors {
   static const Color mostRecentSectionBackground = Color(0xFFF9F9F9);
   static const Color mostRecentSectionMarker = Color(0xFFE5E5E5);
   static const Color mostRecentButtonBorder = Color(0xFF163C43);
+  static const Color dangerRed = Color(0xFFF5222D);
+  static const Color inputTextColor = Color(0xFFC0C0C0);
 }
