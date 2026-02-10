@@ -130,7 +130,7 @@ class _NewsPageState extends State<NewsPage> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 0.72,
+                  childAspectRatio: 0.65,
                 ),
                 itemCount: _getGridItemCount(displayItems.length),
                 itemBuilder: (context, index) {

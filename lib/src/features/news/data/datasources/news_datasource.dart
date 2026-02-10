@@ -59,8 +59,9 @@ class NewsDatasourceImpl implements NewsDatasource {
       // Check if response body is a string (WireMock quota message)
       if (exception.response?.data is String) {
         final bodyMessage = exception.response?.data as String;
-        if (bodyMessage.contains('Monthly request quota') ||
-            bodyMessage.contains('quota')) {
+        if (bodyMessage.contains('quota') ||
+            bodyMessage.contains('exceeded') ||
+            bodyMessage.contains('limite')) {
           return bodyMessage;
         }
       }

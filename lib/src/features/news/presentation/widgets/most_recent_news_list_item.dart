@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/utils/date_formatter.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
@@ -16,7 +17,10 @@ class MostRecentNewsListItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: InkWell(
             onTap: () {
-              // TODO: Navigate to news detail page
+              context.pushNamed(
+                'newsDetails',
+                pathParameters: {'newsId': news.id.toString()},
+              );
             },
             child: IntrinsicHeight(
               child: Row(
