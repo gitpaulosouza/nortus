@@ -12,6 +12,7 @@ import 'package:nortus/src/features/user/presentation/bloc/user_bloc.dart';
 import 'package:nortus/src/features/user/presentation/bloc/user_event.dart';
 import 'package:nortus/src/features/user/presentation/bloc/user_state.dart';
 import 'package:nortus/src/features/user/presentation/widgets/favorite_news_section.dart';
+import 'package:nortus/src/features/user/presentation/widgets/profile_search_bar.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -21,6 +22,14 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  String _searchQuery = '';
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return NortusScaffold(
@@ -93,152 +102,135 @@ class _UserPageState extends State<UserPage> {
 
   Widget _buildContent(BuildContext context, UserState state) {
     final draft = state.draft!;
+    final isSearchActive = _searchQuery.isNotEmpty;
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Page Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Nortus',
-                  style: Theme.of(context).textTheme.displayMedium,
-                ),
-                IconButton(
-                  onPressed: () {
-                    // TODO: Implement search
-                  },
-                  icon: const Icon(Icons.search),
-                  iconSize: 28,
-                  color: AppColors.textPrimary,
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+    return Column(
+      children: [
+        ProfileSearchBar(
+          onSearchChanged: _onSearchChanged,
+          currentQuery: _searchQuery,
+        ),
+        Expanded(
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  draft.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  draft.email,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                if (draft.address.city.isNotEmpty &&
-                    draft.address.country.isNotEmpty)
-                  Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/location-icon.svg',
-                        width: 16,
-                        height: 16,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.textPrimary,
-                          BlendMode.srcIn,
+                if (!isSearchActive) ...[
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          draft.name,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${draft.address.city}, ${draft.address.country}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
+                        const SizedBox(height: 4),
+                        Text(
+                          draft.email,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
-                      ),
-                    ],
-                  )
-                else
-                  const SizedBox.shrink(),
+                        const SizedBox(height: 8),
+                        if (draft.address.city.isNotEmpty &&
+                            draft.address.country.isNotEmpty)
+                          Row(
+                            children: [
+                              SvgPicture.asset(
+                                'assets/icons/location-icon.svg',
+                                width: 16,
+                                height: 16,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.textPrimary,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${draft.address.city}, ${draft.address.country}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          const SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              context.push(
+                                '/user-settings',
+                                extra: context.read<UserBloc>(),
+                              );
+                            },
+                            icon: const Icon(Icons.settings_outlined),
+                            label: const Text('Configurações de usuário'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.textPrimary,
+                              backgroundColor: AppColors.white,
+                              side: const BorderSide(
+                                color: AppColors.textPrimary,
+                                width: 1,
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () => _performLogout(context),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.dangerRed,
+                              backgroundColor: AppColors.white,
+                              side: const BorderSide(
+                                color: AppColors.dangerRed,
+                                width: 1,
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                            ),
+                            child: const Text('Sair da conta'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+                FavoriteNewsSection(searchQuery: _searchQuery),
+                const SizedBox(height: 24),
               ],
             ),
           ),
-
-          const SizedBox(height: 24),
-
-          // Buttons Section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                // User Settings Button
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      context.push(
-                        '/user-settings',
-                        extra: context.read<UserBloc>(),
-                      );
-                    },
-                    icon: const Icon(Icons.settings_outlined),
-                    label: const Text('Configurações de usuário'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textPrimary,
-                      backgroundColor: AppColors.white,
-                      side: const BorderSide(
-                        color: AppColors.textPrimary,
-                        width: 1,
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () => _performLogout(context),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.dangerRed,
-                      backgroundColor: AppColors.white,
-                      side: const BorderSide(
-                        color: AppColors.dangerRed,
-                        width: 1,
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                    ),
-                    child: const Text('Sair da conta'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 32),
-
-          const FavoriteNewsSection(),
-
-          const SizedBox(height: 24),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

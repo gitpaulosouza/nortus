@@ -13,3 +13,9 @@ class NewsLoadMoreRequested extends NewsEvent {
 class NewsRefreshed extends NewsEvent {
   const NewsRefreshed();
 }
+
+class NewsSearchQueryChanged extends NewsEvent {
+  final String query;
+
+  const NewsSearchQueryChanged(this.query);
+}

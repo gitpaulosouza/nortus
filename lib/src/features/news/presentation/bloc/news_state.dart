@@ -3,6 +3,8 @@ import 'package:nortus/src/features/news/data/models/news_model.dart';
 
 class NewsState {
   final List<NewsModel> items;
+  final List<NewsModel> visibleItems;
+  final String searchQuery;
   final int currentPage;
   final int totalPages;
   final bool isLoading;
@@ -12,6 +14,8 @@ class NewsState {
 
   const NewsState({
     required this.items,
+    required this.visibleItems,
+    required this.searchQuery,
     required this.currentPage,
     required this.totalPages,
     required this.isLoading,
@@ -23,6 +27,8 @@ class NewsState {
   factory NewsState.initial() {
     return const NewsState(
       items: [],
+      visibleItems: [],
+      searchQuery: '',
       currentPage: 0,
       totalPages: 0,
       isLoading: false,
@@ -34,6 +40,8 @@ class NewsState {
 
   NewsState copyWith({
     List<NewsModel>? items,
+    List<NewsModel>? visibleItems,
+    String? searchQuery,
     int? currentPage,
     int? totalPages,
     bool? isLoading,
@@ -44,6 +52,8 @@ class NewsState {
   }) {
     return NewsState(
       items: items ?? this.items,
+      visibleItems: visibleItems ?? this.visibleItems,
+      searchQuery: searchQuery ?? this.searchQuery,
       currentPage: currentPage ?? this.currentPage,
       totalPages: totalPages ?? this.totalPages,
       isLoading: isLoading ?? this.isLoading,

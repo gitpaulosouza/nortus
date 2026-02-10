@@ -23,4 +23,7 @@ class AppColors {
   static const Color mostRecentButtonBorder = Color(0xFF163C43);
   static const Color dangerRed = Color(0xFFF5222D);
   static const Color inputTextColor = Color(0xFFC0C0C0);
+  static const Color emptyStateHintText = Color(0xFF666666);
+  static const Color searchBorderColor = Color(0xFFBDBBBB);
+  static const Color searchActionText = Color(0xFF555555);
 }
