@@ -18,6 +18,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthToggleConfirmPasswordVisibility>(_onToggleConfirmPasswordVisibility);
     on<AuthToggleKeepLoggedIn>(_onToggleKeepLoggedIn);
     on<AuthSubmitRequested>(_onSubmitRequested);
+    on<AuthLogoutRequested>(_onLogoutRequested);
   }
 
   void _onModeChanged(AuthModeChanged event, Emitter<AuthState> emit) {
@@ -105,7 +106,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthSubmitRequested event,
     Emitter<AuthState> emit,
   ) async {
-    // If in login mode and password field not shown yet, just show it
     if (state.mode == AuthFormMode.login && !state.showPasswordField) {
       emit(state.copyWith(showPasswordField: true));
       return;
@@ -134,10 +134,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (_) {
         if (state.mode == AuthFormMode.login) {
-          // Login successful - authenticate user
           emit(state.copyWith(isSubmitting: false, isSuccess: true));
         } else {
-          // Registration successful - do NOT authenticate, return to login
           emit(
             state.copyWith(
               isSubmitting: false,
@@ -146,6 +144,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           );
         }
+      },
+    );
+  }
+
+  Future<void> _onLogoutRequested(
+    AuthLogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(state.copyWith(isSubmitting: true, clearError: true));
+
+    final result = await repository.logout();
+
+    result.fold(
+      (failure) {
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            errorMessage: failure.message,
+          ),
+        );
+      },
+      (_) {
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            isSuccess: false,
+            isLogoutSuccess: true,
+          ),
+        );
       },
     );
   }

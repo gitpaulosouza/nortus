@@ -84,7 +84,6 @@ class MostRecentNewsListItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Category
                         if (news.categories.isNotEmpty)
                           Text(
                             news.categories.first.toUpperCase(),
@@ -99,7 +98,6 @@ class MostRecentNewsListItem extends StatelessWidget {
                           )
                         else
                           const SizedBox.shrink(),
-                        // Title
                         Text(
                           news.title,
                           style: Theme.of(
@@ -112,7 +110,6 @@ class MostRecentNewsListItem extends StatelessWidget {
                           maxLines: 5,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        // Time
                         Text(
                           formatRelativeTime(news.publishedAt),
                           style: Theme.of(

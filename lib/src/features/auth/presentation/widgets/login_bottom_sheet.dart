@@ -45,14 +45,12 @@ class _LoginBottomSheetContent extends StatelessWidget {
             subtitle: state.errorMessage!,
           );
         } else if (state.isRegistrationSuccess) {
-          // Registration successful - show message and return to login mode
           SnackbarHelper.showSuccess(
             context,
             'Conta criada com sucesso',
             subtitle: 'Você já pode fazer login',
           );
 
-          // Return to login mode after a brief delay
           Future.delayed(const Duration(milliseconds: 500), () {
             if (context.mounted) {
               context.read<AuthBloc>().add(AuthModeChanged(AuthFormMode.login));
@@ -95,7 +93,6 @@ class _LoginBottomSheetContent extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            // Form Container
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 16,
@@ -109,11 +106,9 @@ class _LoginBottomSheetContent extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  // Email Field
                                   const EmailField(),
                                   const SizedBox(height: 16),
 
-                                  // Password Field with animation
                                   AnimatedSwitcher(
                                     duration: const Duration(milliseconds: 300),
                                     transitionBuilder: (child, animation) {
@@ -141,7 +136,6 @@ class _LoginBottomSheetContent extends StatelessWidget {
                                             ),
                                   ),
 
-                                  // Confirm Password Field with animation
                                   AnimatedSwitcher(
                                     duration: const Duration(milliseconds: 300),
                                     transitionBuilder: (child, animation) {
@@ -172,7 +166,6 @@ class _LoginBottomSheetContent extends StatelessWidget {
                                             ),
                                   ),
 
-                                  // Keep Logged In Checkbox with animation
                                   AnimatedSwitcher(
                                     duration: const Duration(milliseconds: 300),
                                     transitionBuilder: (child, animation) {
@@ -202,12 +195,10 @@ class _LoginBottomSheetContent extends StatelessWidget {
                                             ),
                                   ),
 
-                                  // Spacer for button spacing
                                   if (state.mode == AuthFormMode.register &&
                                       !state.isEmailValid)
                                     const SizedBox(height: 24),
 
-                                  // Submit Button
                                   const AuthSubmitButton(),
                                 ],
                               ),

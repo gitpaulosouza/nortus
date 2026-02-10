@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nortus/src/core/di/app_injector.dart';
+
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/utils/snackbar_helper.dart';
 import 'package:nortus/src/core/widgets/nortus_nav_item.dart';
 import 'package:nortus/src/core/widgets/nortus_scaffold.dart';
-import 'package:nortus/src/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:nortus/src/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:nortus/src/features/auth/presentation/bloc/auth_event.dart';
+import 'package:nortus/src/features/auth/presentation/bloc/auth_state.dart';
 import 'package:nortus/src/features/user/presentation/bloc/user_bloc.dart';
 import 'package:nortus/src/features/user/presentation/bloc/user_event.dart';
 import 'package:nortus/src/features/user/presentation/bloc/user_state.dart';
@@ -32,33 +34,52 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    return NortusScaffold(
-      activeItem: NortusNavItem.profile,
-      body: BlocConsumer<UserBloc, UserState>(
-        listener: (context, state) {
-          if (state.error != null) {
-            SnackbarHelper.showError(
-              context,
-              'Erro ao carregar perfil',
-              subtitle: state.error!.message,
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state.isLoading && state.user == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<UserBloc, UserState>(
+          listener: (context, state) {
+            if (state.error != null) {
+              SnackbarHelper.showError(
+                context,
+                'Erro ao carregar perfil',
+                subtitle: state.error!.message,
+              );
+            }
+          },
+        ),
+        BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state.isLogoutSuccess) {
+              context.go('/login');
+            } else if (state.errorMessage != null && !state.isSubmitting) {
+              SnackbarHelper.showError(
+                context,
+                'Erro ao sair da conta',
+                subtitle: state.errorMessage!,
+              );
+            }
+          },
+        ),
+      ],
+      child: NortusScaffold(
+        activeItem: NortusNavItem.profile,
+        body: BlocBuilder<UserBloc, UserState>(
+          builder: (context, state) {
+            if (state.isLoading && state.user == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (state.error != null && state.user == null) {
-            return _buildErrorState(context);
-          }
+            if (state.error != null && state.user == null) {
+              return _buildErrorState(context);
+            }
 
-          if (state.draft == null) {
-            return const SizedBox.shrink();
-          }
+            if (state.draft == null) {
+              return const SizedBox.shrink();
+            }
 
-          return _buildContent(context, state);
-        },
+            return _buildContent(context, state);
+          },
+        ),
       ),
     );
   }
@@ -207,7 +228,11 @@ class _UserPageState extends State<UserPage> {
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(
-                            onPressed: () => _performLogout(context),
+                            onPressed: () {
+                              context
+                                  .read<AuthBloc>()
+                                  .add(AuthLogoutRequested());
+                            },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.dangerRed,
                               backgroundColor: AppColors.white,
@@ -235,26 +260,6 @@ class _UserPageState extends State<UserPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Future<void> _performLogout(BuildContext context) async {
-    final authController = getIt<AuthController>();
-    final result = await authController.logout();
-
-    result.fold(
-      (error) {
-        if (!context.mounted) return;
-        SnackbarHelper.showError(
-          context,
-          'Erro ao sair da conta',
-          subtitle: error.message,
-        );
-      },
-      (_) {
-        if (!context.mounted) return;
-        context.go('/login');
-      },
     );
   }
 }

@@ -15,6 +15,7 @@ class AuthState {
   final String? errorMessage;
   final bool isSuccess;
   final bool isRegistrationSuccess;
+  final bool isLogoutSuccess;
   final bool showPasswordField;
 
   AuthState({
@@ -32,6 +33,7 @@ class AuthState {
     this.errorMessage,
     this.isSuccess = false,
     this.isRegistrationSuccess = false,
+    this.isLogoutSuccess = false,
     this.showPasswordField = false,
   });
 
@@ -51,6 +53,7 @@ class AuthState {
       errorMessage: null,
       isSuccess: false,
       isRegistrationSuccess: false,
+      isLogoutSuccess: false,
       showPasswordField: false,
     );
   }
@@ -70,6 +73,7 @@ class AuthState {
     String? errorMessage,
     bool? isSuccess,
     bool? isRegistrationSuccess,
+    bool? isLogoutSuccess,
     bool? showPasswordField,
     bool clearError = false,
   }) {
@@ -91,6 +95,7 @@ class AuthState {
       isSuccess: isSuccess ?? this.isSuccess,
       isRegistrationSuccess:
           isRegistrationSuccess ?? this.isRegistrationSuccess,
+      isLogoutSuccess: isLogoutSuccess ?? this.isLogoutSuccess,
       showPasswordField: showPasswordField ?? this.showPasswordField,
     );
   }

@@ -29,3 +29,5 @@ class AuthToggleConfirmPasswordVisibility extends AuthEvent {}
 class AuthToggleKeepLoggedIn extends AuthEvent {}
 
 class AuthSubmitRequested extends AuthEvent {}
+
+class AuthLogoutRequested extends AuthEvent {}

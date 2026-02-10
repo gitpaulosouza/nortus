@@ -26,7 +26,6 @@ class VideoPlaceholderImageCard extends StatelessWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Blurred background image
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: BackdropFilter(
@@ -43,7 +42,6 @@ class VideoPlaceholderImageCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Semi-transparent circle with play icon
               Container(
                 width: 80,
                 height: 80,

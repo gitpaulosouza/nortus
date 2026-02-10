@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/di/app_injector.dart';
+import 'package:nortus/src/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:nortus/src/features/auth/presentation/pages/login_page.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
 import 'package:nortus/src/features/news/presentation/bloc_details/news_details_bloc.dart';
@@ -61,8 +62,15 @@ final GoRouter appRouter = GoRouter(
           path: '/profile',
           name: 'profile',
           builder:
-              (context, state) => BlocProvider(
-                create: (_) => getIt<UserBloc>()..add(const UserStarted()),
+              (context, state) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) => getIt<UserBloc>()..add(const UserStarted()),
+                  ),
+                  BlocProvider(
+                    create: (_) => getIt<AuthBloc>(),
+                  ),
+                ],
                 child: const UserPage(),
               ),
         ),
@@ -72,15 +80,15 @@ final GoRouter appRouter = GoRouter(
       path: '/user-settings',
       name: 'userSettings',
       builder: (context, state) {
-        final userBloc = state.extra as UserBloc?;
-        if (userBloc != null) {
-          return BlocProvider.value(
-            value: userBloc,
-            child: const UserSettingsPage(),
-          );
-        }
-        return BlocProvider(
-          create: (_) => getIt<UserBloc>()..add(const UserStarted()),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) => getIt<UserBloc>()..add(const UserStarted()),
+            ),
+            BlocProvider(
+              create: (_) => getIt<AuthBloc>(),
+            ),
+          ],
           child: const UserSettingsPage(),
         );
       },

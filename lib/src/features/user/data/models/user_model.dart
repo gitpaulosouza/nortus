@@ -52,7 +52,6 @@ class UserModel {
   }
 
   Map<String, dynamic> toJson() {
-    // PATCH body should NOT send id and updatedAt
     return {
       'name': name,
       'email': email,

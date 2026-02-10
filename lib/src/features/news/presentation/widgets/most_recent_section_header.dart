@@ -3,9 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 
 class MostRecentSectionHeader extends StatelessWidget {
-  final VoidCallback? onViewMorePressed;
 
-  const MostRecentSectionHeader({super.key, this.onViewMorePressed});
+  const MostRecentSectionHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +31,7 @@ class MostRecentSectionHeader extends StatelessWidget {
                 ),
               ),
               OutlinedButton(
-                onPressed: onViewMorePressed,
+                onPressed: null,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primaryBackground,
                   side: const BorderSide(

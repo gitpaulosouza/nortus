@@ -22,7 +22,6 @@ class ThreeImageGridCard extends StatelessWidget {
       children: [
         Column(
           children: [
-            // Top image - rectangular
             Container(
               width: double.infinity,
               height: 200,
@@ -35,7 +34,6 @@ class ThreeImageGridCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            // Bottom two images - square
             Row(
               children: [
                 Expanded(
