@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nortus/src/features/news/data/models/news_model.dart';
 import 'package:nortus/src/features/news/data/repositories/news_repository.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_event.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_state.dart';
@@ -10,6 +11,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<NewsStarted>(_onNewsStarted);
     on<NewsLoadMoreRequested>(_onNewsLoadMoreRequested);
     on<NewsRefreshed>(_onNewsRefreshed);
+    on<NewsSearchQueryChanged>(_onNewsSearchQueryChanged);
   }
 
   Future<void> _onNewsStarted(
@@ -44,9 +46,12 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
                 ? updatedCurrentPage >= updatedTotalPages
                 : response.data.isEmpty;
 
+        final visibleItems = _applyFilter(updatedItems, state.searchQuery);
+
         emit(
           state.copyWith(
             items: updatedItems,
+            visibleItems: visibleItems,
             currentPage: updatedCurrentPage,
             totalPages: updatedTotalPages,
             hasReachedEnd: hasReachedEnd,
@@ -65,10 +70,23 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     await _loadFirstPage(emit);
   }
 
+  void _onNewsSearchQueryChanged(
+    NewsSearchQueryChanged event,
+    Emitter<NewsState> emit,
+  ) {
+    final normalizedQuery = _normalizeQuery(event.query);
+    final visibleItems = _applyFilter(state.items, normalizedQuery);
+
+    emit(
+      state.copyWith(searchQuery: normalizedQuery, visibleItems: visibleItems),
+    );
+  }
+
   Future<void> _loadFirstPage(Emitter<NewsState> emit) async {
     emit(
       state.copyWith(
         items: [],
+        visibleItems: [],
         currentPage: 0,
         totalPages: 0,
         hasReachedEnd: false,
@@ -91,9 +109,13 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         final currentPage = response.pagination.page;
         final hasReachedEnd =
             totalPages > 0 ? currentPage >= totalPages : response.data.isEmpty;
+
+        final visibleItems = _applyFilter(response.data, state.searchQuery);
+
         emit(
           state.copyWith(
             items: response.data,
+            visibleItems: visibleItems,
             currentPage: currentPage,
             totalPages: totalPages,
             hasReachedEnd: hasReachedEnd,
@@ -104,5 +126,58 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         );
       },
     );
+  }
+
+  String _normalizeQuery(String query) {
+    return _normalizeText(query);
+  }
+
+  String _normalizeText(String text) {
+    var normalized = text.trim().toLowerCase();
+
+    const withDiacritics =
+        'áàâãäåāăąǎǻảạắằẳẵặấầẩẫậéèêëēĕėęěẻẽẹếềểễệíìîïīĭįıỉĩịóòôõöōŏőøǿỏọốồổỗộớờởỡợúùûüūŭůűųưủũụứừửữựýỳŷÿȳỷỹỵćĉċčďđĝğġģĥħĵķĺļľŀłńņňŉŋŕŗřśŝşšţťŧẁẃŵẅỳýŷÿźżž';
+    const withoutDiacritics =
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeeeeiiiiiiiiiiiiiooooooooooooooooooooooouuuuuuuuuuuuuuuuuuuuyyyyyyyyycccccddgggghhhjklllllllnnnnnrrrsssstttwwwwyyyyzzzz';
+
+    for (var i = 0; i < withDiacritics.length; i++) {
+      normalized = normalized.replaceAll(
+        withDiacritics[i],
+        withoutDiacritics[i],
+      );
+    }
+
+    normalized = normalized.replaceAll(RegExp(r'\s+'), ' ');
+
+    return normalized;
+  }
+
+  List<NewsModel> _applyFilter(List<NewsModel> items, String query) {
+    if (query.isEmpty) {
+      return items;
+    }
+
+    return items.where((news) {
+      final normalizedTitle = _normalizeText(news.title);
+      final normalizedSummary = _normalizeText(news.summary);
+      final normalizedCategories =
+          news.categories.map((c) => _normalizeText(c)).toList();
+
+      if (normalizedTitle.contains(query)) {
+        return true;
+      }
+
+      if (normalizedSummary.contains(query)) {
+        return true;
+      }
+
+      for (final category in normalizedCategories) {
+        if (category.contains(query)) {
+          return true;
+        }
+      }
+
+      return false;
+    }).toList();
   }
 }
