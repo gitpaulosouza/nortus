@@ -39,10 +39,18 @@ class _LoginBottomSheetContent extends StatelessWidget {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.errorMessage != null) {
-          SnackbarHelper.showError(context, state.errorMessage!);
+          SnackbarHelper.showError(
+            context,
+            'Erro ao autenticar',
+            subtitle: state.errorMessage!,
+          );
         } else if (state.isRegistrationSuccess) {
           // Registration successful - show message and return to login mode
-          SnackbarHelper.showSuccess(context, 'Conta criada com sucesso!');
+          SnackbarHelper.showSuccess(
+            context,
+            'Conta criada com sucesso',
+            subtitle: 'Você já pode fazer login',
+          );
 
           // Return to login mode after a brief delay
           Future.delayed(const Duration(milliseconds: 500), () {
@@ -51,7 +59,11 @@ class _LoginBottomSheetContent extends StatelessWidget {
             }
           });
         } else if (state.isSuccess) {
-          SnackbarHelper.showSuccess(context, 'Login realizado com sucesso!');
+          SnackbarHelper.showSuccess(
+            context,
+            'Login realizado com sucesso',
+            subtitle: 'Bem-vindo de volta',
+          );
           context.go('/news');
         }
       },

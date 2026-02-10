@@ -37,7 +37,11 @@ class _UserPageState extends State<UserPage> {
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
           if (state.error != null) {
-            SnackbarHelper.showError(context, state.error!.message);
+            SnackbarHelper.showError(
+              context,
+              'Erro ao carregar perfil',
+              subtitle: state.error!.message,
+            );
           }
         },
         builder: (context, state) {
@@ -241,7 +245,11 @@ class _UserPageState extends State<UserPage> {
     result.fold(
       (error) {
         if (!context.mounted) return;
-        SnackbarHelper.showError(context, error.message);
+        SnackbarHelper.showError(
+          context,
+          'Erro ao sair da conta',
+          subtitle: error.message,
+        );
       },
       (_) {
         if (!context.mounted) return;
