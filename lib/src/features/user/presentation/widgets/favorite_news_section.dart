@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
-import 'package:nortus/src/features/news/data/models/news_author_model.dart';
-import 'package:nortus/src/features/news/data/models/news_image_model.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
+import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
+import 'package:nortus/src/features/news/presentation/bloc/news_state.dart';
 import 'package:nortus/src/features/news/presentation/widgets/search_news_list_item.dart';
 
 class FavoriteNewsSection extends StatelessWidget {
@@ -12,67 +13,71 @@ class FavoriteNewsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final favoriteNews = _getMockFavoriteNews();
-    final displayNews = _filterNews(favoriteNews, searchQuery);
-    final isSearchActive = searchQuery.isNotEmpty;
-    final hasResults = displayNews.isNotEmpty;
+    return BlocBuilder<NewsBloc, NewsState>(
+      builder: (context, state) {
+        final favoriteNews = state.favoriteItems;
+        final displayNews = _filterNews(favoriteNews, searchQuery);
+        final isSearchActive = searchQuery.isNotEmpty;
+        final hasResults = displayNews.isNotEmpty;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (isSearchActive) ...[
-            _buildSearchResultsHeader(searchQuery),
-            const SizedBox(height: 16),
-            if (!hasResults)
-              _buildEmptySearchState()
-            else
-              ...displayNews.map((news) => SearchNewsListItem(news: news)),
-          ] else ...[
-            IntrinsicWidth(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text(
-                    'Notícias favoritadas',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            if (favoriteNews.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32),
-                  child: Text(
-                    'Você ainda não favoritou nenhuma notícia.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textParagraph,
-                    ),
-                    textAlign: TextAlign.center,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (isSearchActive) ...[
+                _buildSearchResultsHeader(searchQuery),
+                const SizedBox(height: 16),
+                if (!hasResults)
+                  _buildEmptySearchState()
+                else
+                  ...displayNews.map((news) => SearchNewsListItem(news: news)),
+              ] else ...[
+                IntrinsicWidth(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Notícias favoritadas',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              )
-            else
-              ...displayNews.map((news) => SearchNewsListItem(news: news)),
-          ],
-        ],
-      ),
+                const SizedBox(height: 24),
+                if (favoriteNews.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 32),
+                      child: Text(
+                        'Você ainda não favoritou nenhuma notícia.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textParagraph,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                else
+                  ...displayNews.map((news) => SearchNewsListItem(news: news)),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -172,49 +177,5 @@ class FavoriteNewsSection extends StatelessWidget {
 
     return normalized;
   }
-
-  List<NewsModel> _getMockFavoriteNews() {
-    return [
-      NewsModel(
-        id: 1,
-        title: 'Tecnologia revoluciona o mercado financeiro brasileiro',
-        image: const NewsImageModel(
-          src:
-              'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800',
-          alt: 'Tecnologia',
-        ),
-        categories: const ['Tecnologia', 'Finanças'],
-        publishedAt: DateTime.now().subtract(const Duration(hours: 5)),
-        summary:
-            'Novas startups de fintech estão transformando a forma como brasileiros lidam com dinheiro.',
-        authors: const [
-          NewsAuthorModel(
-            name: 'João Silva',
-            image: NewsImageModel(src: '', alt: ''),
-            description: 'Jornalista de tecnologia',
-          ),
-        ],
-      ),
-      NewsModel(
-        id: 2,
-        title: 'Sustentabilidade: empresas adotam práticas ecológicas',
-        image: const NewsImageModel(
-          src:
-              'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800',
-          alt: 'Sustentabilidade',
-        ),
-        categories: const ['Meio Ambiente'],
-        publishedAt: DateTime.now().subtract(const Duration(hours: 12)),
-        summary:
-            'Grandes corporações investem em energia renovável e redução de carbono.',
-        authors: const [
-          NewsAuthorModel(
-            name: 'Maria Santos',
-            image: NewsImageModel(src: '', alt: ''),
-            description: 'Especialista em meio ambiente',
-          ),
-        ],
-      ),
-    ];
-  }
 }
+

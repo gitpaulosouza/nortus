@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/di/app_injector.dart';
@@ -9,6 +10,17 @@ import 'package:nortus/src/features/user/presentation/bloc/user_bloc.dart';
 import 'package:nortus/src/features/user/presentation/bloc/user_event.dart';
 import 'package:nortus/src/features/user/presentation/pages/user_page.dart';
 import 'package:nortus/src/features/user/presentation/pages/user_settings_page.dart';
+
+class _NewsShellRoute extends StatelessWidget {
+  final Widget child;
+
+  const _NewsShellRoute({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(create: (_) => getIt<NewsBloc>(), child: child);
+  }
+}
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -23,29 +35,29 @@ final GoRouter appRouter = GoRouter(
       name: 'login',
       builder: (context, state) => const LoginPage(),
     ),
-    GoRoute(
-      path: '/news',
-      name: 'news',
-      builder:
-          (context, state) => BlocProvider(
-            create: (_) => getIt<NewsBloc>(),
-            child: const NewsPage(),
-          ),
-    ),
-    GoRoute(
-      path: '/profile',
-      name: 'profile',
-      builder:
-          (context, state) => BlocProvider(
-            create: (_) => getIt<UserBloc>()..add(const UserStarted()),
-            child: const UserPage(),
-          ),
+    ShellRoute(
+      builder: (context, state, child) => _NewsShellRoute(child: child),
+      routes: [
+        GoRoute(
+          path: '/news',
+          name: 'news',
+          builder: (context, state) => const NewsPage(),
+        ),
+        GoRoute(
+          path: '/profile',
+          name: 'profile',
+          builder:
+              (context, state) => BlocProvider(
+                create: (_) => getIt<UserBloc>()..add(const UserStarted()),
+                child: const UserPage(),
+              ),
+        ),
+      ],
     ),
     GoRoute(
       path: '/user-settings',
       name: 'userSettings',
       builder: (context, state) {
-        // Reuse the same UserBloc instance if passed, otherwise create new
         final userBloc = state.extra as UserBloc?;
         if (userBloc != null) {
           return BlocProvider.value(

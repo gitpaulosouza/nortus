@@ -36,13 +36,18 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
           if (state.error != null) {
-            SnackbarHelper.showError(context, state.error!.message);
+            SnackbarHelper.showError(
+              context,
+              'Erro ao atualizar dados',
+              subtitle: state.error!.message,
+            );
           }
 
           if (state.saveSuccess) {
             SnackbarHelper.showSuccess(
               context,
-              'Dados atualizados com sucesso!',
+              'Dados atualizados com sucesso',
+              subtitle: 'Suas alterações já foram salvas',
             );
           }
         },

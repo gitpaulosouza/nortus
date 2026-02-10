@@ -24,7 +24,6 @@ class NewsPage extends StatefulWidget {
 
 class _NewsPageState extends State<NewsPage> {
   late final ScrollController _scrollController;
-  final Set<int> _favoriteIds = {};
 
   @override
   void initState() {
@@ -44,24 +43,36 @@ class _NewsPageState extends State<NewsPage> {
     context.read<NewsBloc>().add(const NewsLoadMoreRequested());
   }
 
-  void _onFavoriteToggle(int newsId) {
-    setState(() {
-      if (_favoriteIds.contains(newsId)) {
-        _favoriteIds.remove(newsId);
-      } else {
-        _favoriteIds.add(newsId);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return NortusScaffold(
       activeItem: NortusNavItem.news,
       body: BlocConsumer<NewsBloc, NewsState>(
         listener: (context, state) {
+          if (state.lastFavoriteToggledId != null &&
+              state.lastFavoriteWasAdded != null) {
+            if (state.lastFavoriteWasAdded!) {
+              SnackbarHelper.showSuccess(
+                context,
+                'Você favoritou esta notícia',
+                subtitle: 'Você pode encontrá-la no perfil',
+              );
+            } else {
+              SnackbarHelper.showSuccess(
+                context,
+                'Você removeu esta notícia dos favoritos',
+                subtitle: 'Ela não aparece mais no perfil',
+              );
+            }
+            context.read<NewsBloc>().add(const NewsFavoriteFeedbackConsumed());
+          }
+
           if (state.error != null && state.items.isNotEmpty) {
-            SnackbarHelper.showError(context, state.error!.message);
+            SnackbarHelper.showError(
+              context,
+              'Erro ao carregar notícias',
+              subtitle: state.error!.message,
+            );
           }
         },
         builder: (context, state) {
@@ -125,11 +136,7 @@ class _NewsPageState extends State<NewsPage> {
                 itemBuilder: (context, index) {
                   final newsIndex = index + 2;
                   final news = displayItems[newsIndex];
-                  return GridNewsListItem(
-                    news: news,
-                    isFavorite: _favoriteIds.contains(news.id),
-                    onFavoriteToggle: () => _onFavoriteToggle(news.id),
-                  );
+                  return GridNewsListItem(news: news);
                 },
               ),
             ),
@@ -180,9 +187,9 @@ class _NewsPageState extends State<NewsPage> {
         padding: const EdgeInsets.all(16),
         children: [
           _buildSearchResultsHeader(state.searchQuery),
-          if (hasResults)...[
+          if (hasResults) ...[
             const SizedBox(height: 16),
-            ...state.visibleItems.map((news) => SearchNewsListItem(news: news))
+            ...state.visibleItems.map((news) => SearchNewsListItem(news: news)),
           ] else
             _buildEmptySearchState(),
         ],

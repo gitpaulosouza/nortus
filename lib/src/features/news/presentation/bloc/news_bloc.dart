@@ -12,6 +12,8 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<NewsLoadMoreRequested>(_onNewsLoadMoreRequested);
     on<NewsRefreshed>(_onNewsRefreshed);
     on<NewsSearchQueryChanged>(_onNewsSearchQueryChanged);
+    on<NewsFavoriteToggled>(_onNewsFavoriteToggled);
+    on<NewsFavoriteFeedbackConsumed>(_onNewsFavoriteFeedbackConsumed);
   }
 
   Future<void> _onNewsStarted(
@@ -179,5 +181,36 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
 
       return false;
     }).toList();
+  }
+
+  void _onNewsFavoriteToggled(
+    NewsFavoriteToggled event,
+    Emitter<NewsState> emit,
+  ) {
+    final newsId = event.news.id;
+    final updatedFavorites = Set<int>.from(state.favoriteIds);
+
+    if (updatedFavorites.contains(newsId)) {
+      updatedFavorites.remove(newsId);
+    } else {
+      updatedFavorites.add(newsId);
+    }
+
+    final wasAdded = updatedFavorites.contains(newsId);
+
+    emit(
+      state.copyWith(
+        favoriteIds: updatedFavorites,
+        lastFavoriteToggledId: newsId,
+        lastFavoriteWasAdded: wasAdded,
+      ),
+    );
+  }
+
+  void _onNewsFavoriteFeedbackConsumed(
+    NewsFavoriteFeedbackConsumed event,
+    Emitter<NewsState> emit,
+  ) {
+    emit(state.copyWith(clearFavoriteFeedback: true));
   }
 }

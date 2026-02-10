@@ -26,4 +26,5 @@ class AppColors {
   static const Color emptyStateHintText = Color(0xFF666666);
   static const Color searchBorderColor = Color(0xFFBDBBBB);
   static const Color searchActionText = Color(0xFF555555);
+  static const Color favoriteStarActive = Color(0xFFFBBC05);
 }
