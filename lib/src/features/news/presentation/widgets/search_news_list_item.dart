@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
 
@@ -13,7 +14,10 @@ class SearchNewsListItem extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to news detail page
+          context.pushNamed(
+            'newsDetails',
+            pathParameters: {'newsId': news.id.toString()},
+          );
         },
         borderRadius: BorderRadius.circular(16),
         child: Column(

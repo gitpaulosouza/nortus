@@ -11,3 +11,7 @@ class NewsDetailsRefreshed extends NewsDetailsEvent {
   final int newsId;
   const NewsDetailsRefreshed(this.newsId);
 }
+
+class NewsDetailsLoadMoreRequested extends NewsDetailsEvent {
+  const NewsDetailsLoadMoreRequested();
+}

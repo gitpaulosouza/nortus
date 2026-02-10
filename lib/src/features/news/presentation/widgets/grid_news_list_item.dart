@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/utils/date_formatter.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
@@ -21,7 +22,10 @@ class GridNewsListItem extends StatelessWidget {
 
         return InkWell(
           onTap: () {
-            // TODO: Navigate to news detail page
+            context.pushNamed(
+              'newsDetails',
+              pathParameters: {'newsId': news.id.toString()},
+            );
           },
           borderRadius: BorderRadius.circular(12),
           child: Column(

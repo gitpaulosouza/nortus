@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
@@ -22,7 +23,10 @@ class HeroNewsListItem extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 16),
           child: InkWell(
             onTap: () {
-              // TODO: Navigate to news detail page
+              context.pushNamed(
+                'newsDetails',
+                pathParameters: {'newsId': news.id.toString()},
+              );
             },
             borderRadius: BorderRadius.circular(16),
             child: Column(

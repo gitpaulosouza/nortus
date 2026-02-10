@@ -2,6 +2,7 @@ import 'package:either_dart/either.dart';
 import 'package:nortus/src/core/error/app_error.dart';
 import 'package:nortus/src/features/news/data/datasources/news_details_datasource.dart';
 import 'package:nortus/src/features/news/data/models/news_details_model.dart';
+import 'package:nortus/src/features/news/mock/news_details_mock_factory.dart';
 
 abstract class NewsDetailsRepository {
   Future<Either<AppError, NewsDetailsModel>> getNewsDetails(int newsId);
@@ -17,6 +18,22 @@ class NewsDetailsRepositoryImpl implements NewsDetailsRepository {
   Future<Either<AppError, NewsDetailsModel>> getNewsDetails(int newsId) async {
     final result = await datasource.fetchNewsDetails(newsId);
     await Future.delayed(_requestDelay);
-    return result;
+    return result.fold((error) {
+      if (_shouldUseMock(error)) {
+        return Right(
+          NewsDetailsMockFactory.buildMock(newsId: newsId),
+        );
+      }
+      return Left(error);
+    }, (response) => Right(response));
+  }
+
+  bool _shouldUseMock(AppError error) {
+    final message = error.message.toLowerCase();
+
+    return message.contains('monthly request quota') ||
+        message.contains('quota exceeded') ||
+        message.contains('limite') ||
+        message.contains('wiremock');
   }
 }

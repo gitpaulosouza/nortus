@@ -2,6 +2,9 @@ import 'package:nortus/src/features/news/data/models/news_author_model.dart';
 import 'package:nortus/src/features/news/data/models/news_image_model.dart';
 import 'package:nortus/src/features/news/data/models/read_also_model.dart';
 import 'package:nortus/src/features/news/data/models/related_news_model.dart';
+import 'package:nortus/src/features/news/data/models/content_image_model.dart';
+import 'package:nortus/src/features/news/data/models/three_image_grid_model.dart';
+import 'package:nortus/src/features/news/data/models/video_placeholder_model.dart';
 
 class NewsDetailsModel {
   final int id;
@@ -14,6 +17,9 @@ class NewsDetailsModel {
   final String estimatedReadingTime;
   final List<NewsAuthorModel> authors;
   final String description;
+  final List<ContentImageModel> contentImages;
+  final ThreeImageGridModel? threeImageGrid;
+  final VideoPlaceholderModel? videoPlaceholder;
   final List<RelatedNewsModel> relatedNews;
   final ReadAlsoModel? readAlso;
 
@@ -28,6 +34,9 @@ class NewsDetailsModel {
     required this.estimatedReadingTime,
     required this.authors,
     required this.description,
+    this.contentImages = const [],
+    this.threeImageGrid,
+    this.videoPlaceholder,
     required this.relatedNews,
     this.readAlso,
   });
@@ -56,6 +65,22 @@ class NewsDetailsModel {
               .toList() ??
           [],
       description: json['description'] as String? ?? '',
+      contentImages:
+          (json['contentImages'] as List<dynamic>?)
+              ?.map((e) =>
+                  ContentImageModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      threeImageGrid:
+          json['threeImageGrid'] != null
+              ? ThreeImageGridModel.fromJson(
+                  json['threeImageGrid'] as Map<String, dynamic>)
+              : null,
+      videoPlaceholder:
+          json['videoPlaceholder'] != null
+              ? VideoPlaceholderModel.fromJson(
+                  json['videoPlaceholder'] as Map<String, dynamic>)
+              : null,
       relatedNews:
           (json['relatedNews'] as List<dynamic>?)
               ?.map((e) => RelatedNewsModel.fromJson(e as Map<String, dynamic>))
@@ -80,6 +105,9 @@ class NewsDetailsModel {
       'estimatedReadingTime': estimatedReadingTime,
       'authors': authors.map((e) => e.toJson()).toList(),
       'description': description,
+      'contentImages': contentImages.map((e) => e.toJson()).toList(),
+      'threeImageGrid': threeImageGrid?.toJson(),
+      'videoPlaceholder': videoPlaceholder?.toJson(),
       'relatedNews': relatedNews.map((e) => e.toJson()).toList(),
       'readAlso': readAlso?.toJson(),
     };

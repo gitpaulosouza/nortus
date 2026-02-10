@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:either_dart/either.dart';
 import 'package:nortus/src/core/error/app_error.dart';
 import 'package:nortus/src/features/news/data/models/news_details_model.dart';
+import 'package:nortus/src/features/news/mock/news_details_mock_factory.dart';
 
 abstract class NewsDetailsDatasource {
   Future<Either<AppError, NewsDetailsModel>> fetchNewsDetails(int newsId);
@@ -24,10 +25,16 @@ class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
       final response = await dio.get('/news/$newsId/details');
 
       if (response.statusCode != 200 || response.data == null) {
+        if (_shouldUseMock(response.data)) {
+          return Right(NewsDetailsMockFactory.buildMock(newsId: newsId));
+        }
         return Left(NetworkError('Erro de rede. Tente novamente.'));
       }
 
       if (response.data is! Map<String, dynamic>) {
+        if (_shouldUseMock(response.data)) {
+          return Right(NewsDetailsMockFactory.buildMock(newsId: newsId));
+        }
         return Left(UnknownError('Resposta inválida do servidor.'));
       }
 
@@ -36,6 +43,9 @@ class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
       );
       return Right(newsDetailsModel);
     } on DioException catch (e) {
+      if (_shouldUseMock(e.response?.data ?? e.message)) {
+        return Right(NewsDetailsMockFactory.buildMock(newsId: newsId));
+      }
       final errorMessage = _extractErrorMessage(e);
       return Left(NetworkError(errorMessage));
     } catch (e) {
@@ -43,6 +53,14 @@ class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
         UnknownError('Ops! Aconteceu alguma coisa, tente novamente.'),
       );
     }
+  }
+
+  bool _shouldUseMock(Object? value) {
+    final message = value?.toString().toLowerCase() ?? '';
+    return message.contains('quota') ||
+        message.contains('exceeded') ||
+        message.contains('limite') ||
+        message.contains('wiremock');
   }
 
   String _extractErrorMessage(DioException exception) {

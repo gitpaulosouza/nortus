@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/features/auth/presentation/pages/login_page.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
+import 'package:nortus/src/features/news/presentation/bloc_details/news_details_bloc.dart';
+import 'package:nortus/src/features/news/presentation/pages/news_details_page.dart';
 import 'package:nortus/src/features/news/presentation/pages/news_page.dart';
 import 'package:nortus/src/features/splash/presentation/pages/splash_page.dart';
 import 'package:nortus/src/features/user/presentation/bloc/user_bloc.dart';
@@ -42,6 +44,18 @@ final GoRouter appRouter = GoRouter(
           path: '/news',
           name: 'news',
           builder: (context, state) => const NewsPage(),
+        ),
+        GoRoute(
+          path: '/news/:newsId',
+          name: 'newsDetails',
+          builder: (context, state) {
+            final newsId = int.tryParse(state.pathParameters['newsId'] ?? '');
+
+            return BlocProvider(
+              create: (_) => getIt<NewsDetailsBloc>(),
+              child: NewsDetailsPage(newsId: newsId ?? 0),
+            );
+          },
         ),
         GoRoute(
           path: '/profile',

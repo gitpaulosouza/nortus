@@ -16,6 +16,7 @@ class NortusAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: AppColors.primaryBackground,
       elevation: 0,
+      automaticallyImplyLeading: false,
       toolbarHeight: 80,
       titleSpacing: 0,
       title: Padding(

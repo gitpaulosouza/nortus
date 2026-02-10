@@ -27,4 +27,12 @@ class AppColors {
   static const Color searchBorderColor = Color(0xFFBDBBBB);
   static const Color searchActionText = Color(0xFF555555);
   static const Color favoriteStarActive = Color(0xFFFBBC05);
+  static const Color newsTitleDark = Color(0xFF001833);
+  static const Color descriptionText = Color(0xFF2E303C);
+  static const Color resumeCardBackground = Color(0xFFFAFAFA);
+  static const Color resumeCardText = Color(0xFF555555);
+  static const Color categoryChipBackground = Color(0xFFF1F7FC);
+  static const Color categoryChipBorder = Color(0xFFA7CBEE);
+  static const Color categoryText = Color(0xFF163C43);
+  static const Color videoOverlayColor = Color(0xFFECECEC87);
 }
