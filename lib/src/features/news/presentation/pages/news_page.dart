@@ -115,7 +115,7 @@ class _NewsPageState extends State<NewsPage> {
                     margin: const EdgeInsets.only(top: 24, bottom: 16),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     decoration: BoxDecoration(
-                      color: AppColors.mostRecentSectionBackground,
+                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
@@ -134,7 +134,6 @@ class _NewsPageState extends State<NewsPage> {
                     ),
                   ),
 
-                // Load more button
                 if (!state.hasReachedEnd)
                   LoadMoreButton(
                     onPressed: _onLoadMorePressed,
