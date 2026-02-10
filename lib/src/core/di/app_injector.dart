@@ -5,6 +5,7 @@ import 'package:nortus/src/core/storage/local_storage.dart';
 import 'package:nortus/src/features/auth/data/di/auth_injector.dart';
 import 'package:nortus/src/features/news/data/di/news_injector.dart';
 import 'package:nortus/src/features/splash/presentation/di/splash_injector.dart';
+import 'package:nortus/src/features/user/data/di/user_injector.dart';
 
 final getIt = GetIt.instance;
 
@@ -15,4 +16,5 @@ Future<void> configureDependencies() async {
   await configureSplashDependencies(getIt);
   await configureAuthDependencies(getIt);
   await configureNewsDependencies(getIt);
+  await configureUserDependencies(getIt);
 }
