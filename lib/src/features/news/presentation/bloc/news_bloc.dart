@@ -14,6 +14,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<NewsSearchQueryChanged>(_onNewsSearchQueryChanged);
     on<NewsFavoriteToggled>(_onNewsFavoriteToggled);
     on<NewsFavoriteFeedbackConsumed>(_onNewsFavoriteFeedbackConsumed);
+    on<NewsCategorySelected>(_onNewsCategorySelected);
   }
 
   Future<void> _onNewsStarted(
@@ -48,12 +49,18 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
                 ? updatedCurrentPage >= updatedTotalPages
                 : response.data.isEmpty;
 
-        final visibleItems = _applyFilter(updatedItems, state.searchQuery);
+        final categories = _buildCategories(updatedItems);
+        final visibleItems = _applyFilter(
+          updatedItems,
+          state.searchQuery,
+          state.selectedCategory,
+        );
 
         emit(
           state.copyWith(
             items: updatedItems,
             visibleItems: visibleItems,
+            categories: categories,
             currentPage: updatedCurrentPage,
             totalPages: updatedTotalPages,
             hasReachedEnd: hasReachedEnd,
@@ -77,7 +84,11 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     Emitter<NewsState> emit,
   ) {
     final normalizedQuery = _normalizeQuery(event.query);
-    final visibleItems = _applyFilter(state.items, normalizedQuery);
+    final visibleItems = _applyFilter(
+      state.items,
+      normalizedQuery,
+      state.selectedCategory,
+    );
 
     emit(
       state.copyWith(searchQuery: normalizedQuery, visibleItems: visibleItems),
@@ -112,12 +123,18 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         final hasReachedEnd =
             totalPages > 0 ? currentPage >= totalPages : response.data.isEmpty;
 
-        final visibleItems = _applyFilter(response.data, state.searchQuery);
+        final categories = _buildCategories(response.data);
+        final visibleItems = _applyFilter(
+          response.data,
+          state.searchQuery,
+          state.selectedCategory,
+        );
 
         emit(
           state.copyWith(
             items: response.data,
             visibleItems: visibleItems,
+            categories: categories,
             currentPage: currentPage,
             totalPages: totalPages,
             hasReachedEnd: hasReachedEnd,
@@ -154,33 +171,80 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     return normalized;
   }
 
-  List<NewsModel> _applyFilter(List<NewsModel> items, String query) {
-    if (query.isEmpty) {
-      return items;
+  List<NewsModel> _applyFilter(
+    List<NewsModel> items,
+    String query,
+    String selectedCategory,
+  ) {
+    var filtered = items;
+
+    // Apply search filter
+    if (query.isNotEmpty) {
+      filtered =
+          filtered.where((news) {
+            final normalizedTitle = _normalizeText(news.title);
+            final normalizedSummary = _normalizeText(news.summary);
+            final normalizedCategories =
+                news.categories.map((c) => _normalizeText(c)).toList();
+
+            if (normalizedTitle.contains(query)) {
+              return true;
+            }
+
+            if (normalizedSummary.contains(query)) {
+              return true;
+            }
+
+            for (final category in normalizedCategories) {
+              if (category.contains(query)) {
+                return true;
+              }
+            }
+
+            return false;
+          }).toList();
     }
 
-    return items.where((news) {
-      final normalizedTitle = _normalizeText(news.title);
-      final normalizedSummary = _normalizeText(news.summary);
-      final normalizedCategories =
-          news.categories.map((c) => _normalizeText(c)).toList();
+    // Apply category filter
+    if (selectedCategory != 'Todas as notícias') {
+      filtered =
+          filtered.where((news) {
+            return news.categories.contains(selectedCategory);
+          }).toList();
+    }
 
-      if (normalizedTitle.contains(query)) {
-        return true;
-      }
+    return filtered;
+  }
 
-      if (normalizedSummary.contains(query)) {
-        return true;
-      }
+  List<String> _buildCategories(List<NewsModel> items) {
+    if (items.isEmpty) {
+      return ['Todas as notícias'];
+    }
 
-      for (final category in normalizedCategories) {
-        if (category.contains(query)) {
-          return true;
-        }
-      }
+    final categorySet = <String>{};
+    for (final news in items) {
+      categorySet.addAll(news.categories);
+    }
+    final sortedCategories = categorySet.toList()..sort();
+    return ['Todas as notícias', ...sortedCategories];
+  }
 
-      return false;
-    }).toList();
+  void _onNewsCategorySelected(
+    NewsCategorySelected event,
+    Emitter<NewsState> emit,
+  ) {
+    final visibleItems = _applyFilter(
+      state.items,
+      state.searchQuery,
+      event.category,
+    );
+
+    emit(
+      state.copyWith(
+        selectedCategory: event.category,
+        visibleItems: visibleItems,
+      ),
+    );
   }
 
   void _onNewsFavoriteToggled(

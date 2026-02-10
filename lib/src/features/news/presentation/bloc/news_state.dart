@@ -5,6 +5,8 @@ class NewsState {
   final List<NewsModel> items;
   final List<NewsModel> visibleItems;
   final String searchQuery;
+  final String selectedCategory;
+  final List<String> categories;
   final Set<int> favoriteIds;
   final int? lastFavoriteToggledId;
   final bool? lastFavoriteWasAdded;
@@ -19,6 +21,8 @@ class NewsState {
     required this.items,
     required this.visibleItems,
     required this.searchQuery,
+    required this.selectedCategory,
+    required this.categories,
     required this.favoriteIds,
     this.lastFavoriteToggledId,
     this.lastFavoriteWasAdded,
@@ -35,6 +39,8 @@ class NewsState {
       items: [],
       visibleItems: [],
       searchQuery: '',
+      selectedCategory: 'Todas as notícias',
+      categories: ['Todas as notícias'],
       favoriteIds: {},
       lastFavoriteToggledId: null,
       lastFavoriteWasAdded: null,
@@ -51,6 +57,8 @@ class NewsState {
     List<NewsModel>? items,
     List<NewsModel>? visibleItems,
     String? searchQuery,
+    String? selectedCategory,
+    List<String>? categories,
     Set<int>? favoriteIds,
     int? lastFavoriteToggledId,
     bool? lastFavoriteWasAdded,
@@ -67,6 +75,8 @@ class NewsState {
       items: items ?? this.items,
       visibleItems: visibleItems ?? this.visibleItems,
       searchQuery: searchQuery ?? this.searchQuery,
+      selectedCategory: selectedCategory ?? this.selectedCategory,
+      categories: categories ?? this.categories,
       favoriteIds: favoriteIds ?? this.favoriteIds,
       lastFavoriteToggledId:
           clearFavoriteFeedback
