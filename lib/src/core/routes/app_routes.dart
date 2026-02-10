@@ -5,6 +5,10 @@ import 'package:nortus/src/features/auth/presentation/pages/login_page.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
 import 'package:nortus/src/features/news/presentation/pages/news_page.dart';
 import 'package:nortus/src/features/splash/presentation/pages/splash_page.dart';
+import 'package:nortus/src/features/user/presentation/bloc/user_bloc.dart';
+import 'package:nortus/src/features/user/presentation/bloc/user_event.dart';
+import 'package:nortus/src/features/user/presentation/pages/user_page.dart';
+import 'package:nortus/src/features/user/presentation/pages/user_settings_page.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -27,6 +31,33 @@ final GoRouter appRouter = GoRouter(
             create: (_) => getIt<NewsBloc>(),
             child: const NewsPage(),
           ),
+    ),
+    GoRoute(
+      path: '/profile',
+      name: 'profile',
+      builder:
+          (context, state) => BlocProvider(
+            create: (_) => getIt<UserBloc>()..add(const UserStarted()),
+            child: const UserPage(),
+          ),
+    ),
+    GoRoute(
+      path: '/user-settings',
+      name: 'userSettings',
+      builder: (context, state) {
+        // Reuse the same UserBloc instance if passed, otherwise create new
+        final userBloc = state.extra as UserBloc?;
+        if (userBloc != null) {
+          return BlocProvider.value(
+            value: userBloc,
+            child: const UserSettingsPage(),
+          );
+        }
+        return BlocProvider(
+          create: (_) => getIt<UserBloc>()..add(const UserStarted()),
+          child: const UserSettingsPage(),
+        );
+      },
     ),
   ],
 );
