@@ -23,7 +23,6 @@ class SearchNewsListItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image without favorite button
             if (news.image.src.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),

@@ -1,35 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
-import 'package:nortus/src/features/splash/presentation/controllers/splash_controller.dart';
+import 'package:nortus/src/features/splash/presentation/bloc/splash_bloc.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
-}
-
-class _SplashPageState extends State<SplashPage> {
-  late final SplashController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = getIt<SplashController>();
-    _handleNavigation();
-  }
-
-  Future<void> _handleNavigation() async {
-    final route = await controller.resolveRoute();
-    if (!mounted) return;
-    context.go(route);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<SplashBloc>()..add(SplashStarted()),
+      child: BlocListener<SplashBloc, SplashState>(
+        listener: (context, state) {
+          if (state.nextRoute != null) {
+            context.go(state.nextRoute!);
+          }
+        },
+        child: _buildContent(context),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(

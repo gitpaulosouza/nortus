@@ -34,7 +34,6 @@ class NewsDatasourceImpl implements NewsDatasource {
       );
       return Right(responseModel);
     } on DioException catch (e) {
-      // Try to extract error message from response
       final errorMessage = _extractErrorMessage(e);
       return Left(NetworkError(errorMessage));
     } catch (e) {
@@ -48,7 +47,6 @@ class NewsDatasourceImpl implements NewsDatasource {
     try {
       final responseData = exception.response?.data;
 
-      // Check if response data contains error message
       if (responseData is Map<String, dynamic>) {
         final message = responseData['message'] as String?;
         if (message != null && message.isNotEmpty) {
@@ -56,7 +54,6 @@ class NewsDatasourceImpl implements NewsDatasource {
         }
       }
 
-      // Check if response body is a string (WireMock quota message)
       if (exception.response?.data is String) {
         final bodyMessage = exception.response?.data as String;
         if (bodyMessage.contains('quota') ||
@@ -66,7 +63,6 @@ class NewsDatasourceImpl implements NewsDatasource {
         }
       }
     } catch (_) {
-      // If parsing fails, use generic message
     }
 
     return 'Erro de rede. Tente novamente.';
