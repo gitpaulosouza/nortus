@@ -10,12 +10,12 @@ abstract class AuthDatasource {
 }
 
 class AuthDatasourceImpl implements AuthDatasource {
-  final Dio dio;
+  final Dio _dio;
 
   static const String _validLogin = 'desafioLoomi';
   static const String _validPassword = 'senha123';
 
-  AuthDatasourceImpl(this.dio);
+  AuthDatasourceImpl(this._dio);
 
   bool _isQuotaExceededError(dynamic error) {
     if (error is DioException) {
@@ -39,10 +39,41 @@ class AuthDatasourceImpl implements AuthDatasource {
     return model.login == _validLogin && model.password == _validPassword;
   }
 
+  AppError _mapDioExceptionToAppError(DioException e) {
+    final message =
+        _extractServerMessage(e) ?? 'Erro de rede. Tente novamente.';
+    return NetworkError(message);
+  }
+
+  String? _extractServerMessage(DioException e) {
+    final data = e.response?.data;
+
+    if (data is Map<String, dynamic>) {
+      final errors = data['errors'];
+      if (errors is List && errors.isNotEmpty) {
+        final first = errors.first;
+        if (first is String && first.trim().isNotEmpty) {
+          return first.trim();
+        }
+      }
+
+      final message = data['message'] as String?;
+      if (message != null && message.trim().isNotEmpty) {
+        return message.trim();
+      }
+    }
+
+    if (data is String && data.trim().isNotEmpty) {
+      return data.trim();
+    }
+
+    return null;
+  }
+
   @override
   Future<Either<AppError, void>> login(AuthModel model) async {
     try {
-      await dio.post('/auth', data: model.toJson());
+      await _dio.post('/auth', data: model.toJson());
       return Right(null);
     } on DioException catch (e) {
       if (_isQuotaExceededError(e)) {
@@ -50,14 +81,14 @@ class AuthDatasourceImpl implements AuthDatasource {
           return Right(null);
         }
 
-        return Left(ValidationError('Credenciais inválidas'));
+        return Left(_mapDioExceptionToAppError(e));
       }
 
       if (e.response?.statusCode == 401) {
         return Left(ValidationError('Credenciais inválidas'));
       }
 
-      return Left(NetworkError('Erro de rede. Tente novamente.'));
+      return Left(_mapDioExceptionToAppError(e));
     } catch (e) {
       return Left(
         UnknownError('Ops! Aconteceu alguma coisa, tente novamente.'),
