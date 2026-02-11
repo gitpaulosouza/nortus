@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:nortus/src/features/news/data/cache/news_cache_service.dart';
 import 'package:nortus/src/features/news/data/datasources/news_datasource.dart';
 import 'package:nortus/src/features/news/data/datasources/news_details_datasource.dart';
 import 'package:nortus/src/features/news/data/repositories/news_details_repository.dart';
@@ -11,11 +12,15 @@ Future<void> configureNewsDependencies(GetIt getIt) async {
     () => NewsDatasourceImpl(getIt()),
   );
 
+  getIt.registerLazySingleton<NewsCacheService>(() => NewsCacheService());
+
   getIt.registerLazySingleton<NewsDetailsDatasource>(
     () => NewsDetailsDatasourceImpl(getIt()),
   );
 
-  getIt.registerLazySingleton<NewsRepository>(() => NewsRepository(getIt()));
+  getIt.registerLazySingleton<NewsRepository>(
+    () => NewsRepository(getIt(), getIt()),
+  );
 
   getIt.registerLazySingleton<NewsDetailsRepository>(
     () => NewsDetailsRepositoryImpl(getIt()),
