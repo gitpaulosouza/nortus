@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
+import 'package:nortus/src/features/news/presentation/widgets/nortus_cached_image.dart';
 
 class ThreeImageGridCard extends StatelessWidget {
   final String topImageUrl;
@@ -22,43 +23,28 @@ class ThreeImageGridCard extends StatelessWidget {
       children: [
         Column(
           children: [
-            Container(
+            NortusCachedImage(
+              imageUrl: topImageUrl,
               width: double.infinity,
               height: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                image: DecorationImage(
-                  image: NetworkImage(topImageUrl),
-                  fit: BoxFit.cover,
-                ),
-              ),
+              borderRadius: BorderRadius.circular(12),
             ),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: Container(
+                  child: NortusCachedImage(
+                    imageUrl: bottomLeftImageUrl,
                     height: 150,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      image: DecorationImage(
-                        image: NetworkImage(bottomLeftImageUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Container(
+                  child: NortusCachedImage(
+                    imageUrl: bottomRightImageUrl,
                     height: 150,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      image: DecorationImage(
-                        image: NetworkImage(bottomRightImageUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
               ],

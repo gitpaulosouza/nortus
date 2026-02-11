@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
+import 'package:nortus/src/features/news/presentation/widgets/nortus_cached_image.dart';
 
 class FullWidthImageCard extends StatelessWidget {
   final String imageUrl;
@@ -16,16 +17,11 @@ class FullWidthImageCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
+        NortusCachedImage(
+          imageUrl: imageUrl,
           width: double.infinity,
           height: 300,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(
-              image: NetworkImage(imageUrl),
-              fit: BoxFit.cover,
-            ),
-          ),
+          borderRadius: BorderRadius.circular(12),
         ),
         const SizedBox(height: 12),
         Text(

@@ -7,6 +7,7 @@ import 'package:nortus/src/features/news/data/models/news_model.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_event.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_state.dart';
+import 'package:nortus/src/features/news/presentation/widgets/nortus_cached_image.dart';
 
 class HeroNewsListItem extends StatelessWidget {
   final NewsModel news;
@@ -35,36 +36,11 @@ class HeroNewsListItem extends StatelessWidget {
                 if (news.image.src.isNotEmpty)
                   Stack(
                     children: [
-                      ClipRRect(
+                      NortusCachedImage(
+                        imageUrl: news.image.src,
+                        aspectRatio: 16 / 9,
                         borderRadius: BorderRadius.circular(16),
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Image.network(
-                            news.image.src,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Container(
-                                color: AppColors.bottomSheetBackground,
-                                child: const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: AppColors.bottomSheetBackground,
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.broken_image,
-                                    size: 48,
-                                    color: AppColors.copyrightText,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                        fit: BoxFit.cover,
                       ),
                       Positioned(
                         top: 12,

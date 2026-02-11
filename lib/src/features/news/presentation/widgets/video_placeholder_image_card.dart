@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
+import 'package:nortus/src/features/news/presentation/widgets/nortus_cached_image.dart';
 import 'dart:ui' as ui;
 
 class VideoPlaceholderImageCard extends StatelessWidget {
@@ -20,9 +21,7 @@ class VideoPlaceholderImageCard extends StatelessWidget {
         Container(
           width: double.infinity,
           height: 300,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -30,15 +29,11 @@ class VideoPlaceholderImageCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: BackdropFilter(
                   filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                  child: Container(
+                  child: NortusCachedImage(
+                    imageUrl: imageUrl,
                     width: double.infinity,
                     height: 300,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(imageUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
               ),

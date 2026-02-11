@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/utils/date_formatter.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
+import 'package:nortus/src/features/news/presentation/widgets/nortus_cached_image.dart';
 
 class MostRecentNewsListItem extends StatelessWidget {
   final NewsModel news;
@@ -30,42 +31,11 @@ class MostRecentNewsListItem extends StatelessWidget {
                     flex: 1,
                     child:
                         news.image.src.isNotEmpty
-                            ? ClipRRect(
+                            ? NortusCachedImage(
+                              imageUrl: news.image.src,
+                              aspectRatio: 1.57,
                               borderRadius: BorderRadius.circular(12),
-                              child: AspectRatio(
-                                aspectRatio: 1.57,
-                                child: Image.network(
-                                  news.image.src,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder: (
-                                    context,
-                                    child,
-                                    loadingProgress,
-                                  ) {
-                                    if (loadingProgress == null) return child;
-                                    return Container(
-                                      color: AppColors.bottomSheetBackground,
-                                      child: const Center(
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      color: AppColors.bottomSheetBackground,
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.broken_image,
-                                          size: 24,
-                                          color: AppColors.copyrightText,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
+                              fit: BoxFit.cover,
                             )
                             : AspectRatio(
                               aspectRatio: 173 / 110,
