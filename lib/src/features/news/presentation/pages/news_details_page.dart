@@ -8,6 +8,7 @@ import 'package:nortus/src/core/widgets/nortus_scaffold.dart';
 import 'package:nortus/src/features/news/presentation/bloc_details/news_details_bloc.dart';
 import 'package:nortus/src/features/news/presentation/bloc_details/news_details_event.dart';
 import 'package:nortus/src/features/news/presentation/bloc_details/news_details_state.dart';
+import 'package:nortus/src/features/news/presentation/widgets/nortus_cached_image.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_event.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_state.dart';
@@ -200,15 +201,10 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
             ),
           ),
 
-          Container(
+          NortusCachedImage(
+            imageUrl: data.image.src,
             width: double.infinity,
             height: 250,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(data.image.src),
-                fit: BoxFit.cover,
-              ),
-            ),
           ),
 
           Padding(

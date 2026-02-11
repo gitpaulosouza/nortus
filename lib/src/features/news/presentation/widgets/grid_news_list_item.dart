@@ -8,6 +8,7 @@ import 'package:nortus/src/features/news/data/models/news_model.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_event.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_state.dart';
+import 'package:nortus/src/features/news/presentation/widgets/nortus_cached_image.dart';
 
 class GridNewsListItem extends StatelessWidget {
   final NewsModel news;
@@ -34,36 +35,11 @@ class GridNewsListItem extends StatelessWidget {
               Stack(
                 children: [
                   if (news.image.src.isNotEmpty)
-                    ClipRRect(
+                    NortusCachedImage(
+                      imageUrl: news.image.src,
+                      aspectRatio: 4 / 3,
                       borderRadius: BorderRadius.circular(12),
-                      child: AspectRatio(
-                        aspectRatio: 4 / 3,
-                        child: Image.network(
-                          news.image.src,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              color: AppColors.bottomSheetBackground,
-                              child: const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: AppColors.bottomSheetBackground,
-                              child: const Center(
-                                child: Icon(
-                                  Icons.broken_image,
-                                  size: 32,
-                                  color: AppColors.copyrightText,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                      fit: BoxFit.cover,
                     )
                   else
                     AspectRatio(

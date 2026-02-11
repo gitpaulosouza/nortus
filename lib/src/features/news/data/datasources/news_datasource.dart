@@ -10,9 +10,9 @@ abstract class NewsDatasource {
 }
 
 class NewsDatasourceImpl implements NewsDatasource {
-  final Dio dio;
+  NewsDatasourceImpl(this._dio);
 
-  NewsDatasourceImpl(this.dio);
+  final Dio _dio;
 
   @override
   Future<Either<AppError, NewsListResponseModel>> fetchNews({
@@ -23,48 +23,49 @@ class NewsDatasourceImpl implements NewsDatasource {
     }
 
     try {
-      final response = await dio.get('/news', queryParameters: {'page': page});
+      final response = await _dio.get('/news', queryParameters: {'page': page});
 
-      if (response.statusCode != 200 || response.data == null) {
-        return Left(NetworkError('Erro de rede. Tente novamente.'));
-      }
-
-      final responseModel = NewsListResponseModel.fromJson(
-        response.data as Map<String, dynamic>,
-      );
-      return Right(responseModel);
+      final model = _parseNewsListResponse(response.data);
+      return Right(model);
     } on DioException catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      return Left(NetworkError(errorMessage));
-    } catch (e) {
+      return Left(_mapDioExceptionToAppError(e));
+    } catch (_) {
       return Left(
         UnknownError('Ops! Aconteceu alguma coisa, tente novamente.'),
       );
     }
   }
 
-  String _extractErrorMessage(DioException exception) {
-    try {
-      final responseData = exception.response?.data;
+  NewsListResponseModel _parseNewsListResponse(dynamic data) {
+    if (data is! Map<String, dynamic>) {
+      throw const FormatException('Invalid response format');
+    }
+    return NewsListResponseModel.fromJson(data);
+  }
 
-      if (responseData is Map<String, dynamic>) {
-        final message = responseData['message'] as String?;
-        if (message != null && message.isNotEmpty) {
-          return message;
+  AppError _mapDioExceptionToAppError(DioException e) {
+    final message =
+        _extractServerMessage(e) ?? 'Erro de rede. Tente novamente.';
+    return NetworkError(message);
+  }
+
+  String? _extractServerMessage(DioException e) {
+    final data = e.response?.data;
+
+    if (data is Map<String, dynamic>) {
+      final errors = data['errors'];
+      if (errors is List && errors.isNotEmpty) {
+        final first = errors.first;
+        if (first is String && first.trim().isNotEmpty) {
+          return first.trim();
         }
       }
-
-      if (exception.response?.data is String) {
-        final bodyMessage = exception.response?.data as String;
-        if (bodyMessage.contains('quota') ||
-            bodyMessage.contains('exceeded') ||
-            bodyMessage.contains('limite')) {
-          return bodyMessage;
-        }
-      }
-    } catch (_) {
     }
 
-    return 'Erro de rede. Tente novamente.';
+    if (data is String && data.trim().isNotEmpty) {
+      return data.trim();
+    }
+
+    return null;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
+import 'package:nortus/src/features/news/presentation/widgets/nortus_cached_image.dart';
 
 class SearchNewsListItem extends StatelessWidget {
   final NewsModel news;
@@ -24,34 +25,11 @@ class SearchNewsListItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (news.image.src.isNotEmpty)
-              ClipRRect(
+              NortusCachedImage(
+                imageUrl: news.image.src,
+                aspectRatio: 19 / 9,
                 borderRadius: BorderRadius.circular(16),
-                child: AspectRatio(
-                  aspectRatio: 19 / 9,
-                  child: Image.network(
-                    news.image.src,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        color: AppColors.bottomSheetBackground,
-                        child: const Center(child: CircularProgressIndicator()),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: AppColors.bottomSheetBackground,
-                        child: const Center(
-                          child: Icon(
-                            Icons.broken_image,
-                            size: 48,
-                            color: AppColors.copyrightText,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                fit: BoxFit.cover,
               ),
             Padding(
               padding: const EdgeInsets.only(top: 16, bottom: 16),
