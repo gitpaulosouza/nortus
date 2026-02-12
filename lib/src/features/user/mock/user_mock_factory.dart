@@ -1,4 +1,4 @@
-import 'package:nortus/src/features/user/data/models/user_address_model.dart';
+import 'package:nortus/src/features/user/data/models/adress_user_model.dart';
 import 'package:nortus/src/features/user/data/models/user_model.dart';
 
 class UserMockFactory {
@@ -10,7 +10,7 @@ class UserMockFactory {
       language: 'pt-BR',
       dateFormat: 'DD/MM/YYYY',
       timezone: 'America/Sao_Paulo',
-      address: UserAddressModel(
+      address: AdressUserModel(
         zipCode: '50781-000',
         country: 'Brasil',
         street: 'Avenida São João Domingues Terceiro',

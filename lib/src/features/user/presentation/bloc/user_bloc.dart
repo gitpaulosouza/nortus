@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nortus/src/core/error/app_error.dart';
 import 'package:nortus/src/core/utils/validators.dart';
-import 'package:nortus/src/features/user/data/models/user_address_model.dart';
+import 'package:nortus/src/features/user/data/models/adress_user_model.dart';
 import 'package:nortus/src/features/user/data/models/user_model.dart';
 import 'package:nortus/src/features/user/data/repositories/user_repository.dart';
 import 'package:nortus/src/features/user/presentation/bloc/user_event.dart';
@@ -363,7 +363,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     String? language,
     String? dateFormat,
     String? timezone,
-    UserAddressModel? address,
+    AdressUserModel? address,
   }) {
     return UserModel(
       id: user.id,
@@ -377,8 +377,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     );
   }
 
-  UserAddressModel _copyAddressWith(
-    UserAddressModel address, {
+  AdressUserModel _copyAddressWith(
+    AdressUserModel address, {
     String? zipCode,
     String? country,
     String? street,
@@ -388,7 +388,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     String? city,
     String? state,
   }) {
-    return UserAddressModel(
+    return AdressUserModel(
       zipCode: zipCode ?? address.zipCode,
       country: country ?? address.country,
       street: street ?? address.street,

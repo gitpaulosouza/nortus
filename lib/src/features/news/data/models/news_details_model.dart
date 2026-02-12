@@ -41,7 +41,7 @@ class NewsDetailsModel {
     this.readAlso,
   });
 
-  factory NewsDetailsModel.fromJson(Map<String, dynamic> json) {
+  static NewsDetailsModel fromJson(Map<String, dynamic> json) {
     return NewsDetailsModel(
       id: json['id'] as int? ?? 0,
       title: json['title'] as String? ?? '',

@@ -7,7 +7,7 @@ class VideoPlaceholderModel {
     required this.caption,
   });
 
-  factory VideoPlaceholderModel.fromJson(Map<String, dynamic> json) {
+  static VideoPlaceholderModel fromJson(Map<String, dynamic> json) {
     return VideoPlaceholderModel(
       imageUrl: json['imageUrl'] as String? ?? '',
       caption: json['caption'] as String? ?? '',

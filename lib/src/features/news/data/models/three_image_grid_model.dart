@@ -11,7 +11,7 @@ class ThreeImageGridModel {
     required this.caption,
   });
 
-  factory ThreeImageGridModel.fromJson(Map<String, dynamic> json) {
+  static ThreeImageGridModel fromJson(Map<String, dynamic> json) {
     return ThreeImageGridModel(
       topImageUrl: json['topImageUrl'] as String? ?? '',
       bottomLeftImageUrl: json['bottomLeftImageUrl'] as String? ?? '',

@@ -4,7 +4,7 @@ class ReadAlsoModel {
 
   const ReadAlsoModel({required this.id, required this.title});
 
-  factory ReadAlsoModel.fromJson(Map<String, dynamic> json) {
+  static ReadAlsoModel fromJson(Map<String, dynamic> json) {
     return ReadAlsoModel(
       id: json['id'] as int? ?? 0,
       title: json['title'] as String? ?? '',

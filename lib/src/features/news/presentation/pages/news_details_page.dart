@@ -244,94 +244,89 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
 
           const SizedBox(height: 32),
 
-          if (data.contentImages.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children:
-                    data.contentImages
-                        .map(
-                          (contentImage) => Padding(
-                            padding: const EdgeInsets.only(bottom: 32),
-                            child: FullWidthImageCard(
-                              imageUrl: contentImage.imageUrl,
-                              caption: contentImage.caption,
-                            ),
-                          ),
-                        )
-                        .toList(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                data.description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.descriptionText,
-                  height: 1.8,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                FullWidthImageCard(
+                  imageUrl: data.image.src,
+                  caption: data.imageCaption,
                 ),
-              ),
+                const SizedBox(height: 32),
+              ],
             ),
-          ],
+          ),
 
-          if (data.threeImageGrid != null) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  ThreeImageGridCard(
-                    topImageUrl: data.threeImageGrid!.topImageUrl,
-                    bottomLeftImageUrl: data.threeImageGrid!.bottomLeftImageUrl,
-                    bottomRightImageUrl:
-                        data.threeImageGrid!.bottomRightImageUrl,
-                    caption: data.threeImageGrid!.caption,
-                  ),
-                  const SizedBox(height: 32),
-                ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              data.description,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppColors.descriptionText,
+                height: 1.8,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                data.description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.descriptionText,
-                  height: 1.8,
-                ),
-              ),
-            ),
-          ],
+          ),
 
-          if (data.videoPlaceholder != null) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  VideoPlaceholderImageCard(
-                    imageUrl: data.videoPlaceholder!.imageUrl,
-                    caption: data.videoPlaceholder!.caption,
-                  ),
-                  const SizedBox(height: 32),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                data.description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.descriptionText,
-                  height: 1.8,
+          const SizedBox(height: 32),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                ThreeImageGridCard(
+                  topImageUrl: data.image.src,
+                  bottomLeftImageUrl: data.image.src,
+                  bottomRightImageUrl: data.image.src,
+                  caption: data.imageCaption,
                 ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              data.description,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppColors.descriptionText,
+                height: 1.8,
               ),
             ),
-          ],
+          ),
+
+          const SizedBox(height: 32),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                VideoPlaceholderImageCard(
+                  imageUrl: data.image.src,
+                  caption: data.imageCaption,
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              data.description,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppColors.descriptionText,
+                height: 1.8,
+              ),
+            ),
+          ),
 
           if (data.categories.isNotEmpty)
             Padding(
@@ -387,7 +382,7 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
                   childAspectRatio: 0.65,
                 ),
                 itemCount:
-                    data.relatedNews.length > 8 ? 8 : data.relatedNews.length,
+                    data.relatedNews.length > 4 ? 4 : data.relatedNews.length,
                 itemBuilder: (context, index) {
                   final relatedNews = data.relatedNews[index];
                   final newsModel = NewsModel(
@@ -407,17 +402,18 @@ class _NewsDetailsPageState extends State<NewsDetailsPage> {
               ),
             ),
             const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: LoadMoreButton(
-                onPressed: () {
-                  context.read<NewsDetailsBloc>().add(
-                    const NewsDetailsLoadMoreRequested(),
-                  );
-                },
-                isLoading: state.isLoadingMore,
+            if (!state.hasReachedEnd && data.relatedNews.length > 4)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: LoadMoreButton(
+                  onPressed: () {
+                    context.read<NewsDetailsBloc>().add(
+                      const NewsDetailsLoadMoreRequested(),
+                    );
+                  },
+                  isLoading: state.isLoadingMore,
+                ),
               ),
-            ),
             const SizedBox(height: 24),
           ],
         ],

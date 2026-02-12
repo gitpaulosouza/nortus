@@ -17,7 +17,7 @@ class RelatedNewsModel {
     required this.authors,
   });
 
-  factory RelatedNewsModel.fromJson(Map<String, dynamic> json) {
+  static RelatedNewsModel fromJson(Map<String, dynamic> json) {
     return RelatedNewsModel(
       id: json['id'] as int? ?? 0,
       title: json['title'] as String? ?? '',

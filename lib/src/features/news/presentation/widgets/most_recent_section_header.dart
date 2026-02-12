@@ -3,8 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 
 class MostRecentSectionHeader extends StatelessWidget {
+  final VoidCallback? onViewMorePressed;
+  final ScrollController? scrollController;
 
-  const MostRecentSectionHeader({super.key});
+  const MostRecentSectionHeader({
+    super.key,
+    this.onViewMorePressed,
+    this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +37,7 @@ class MostRecentSectionHeader extends StatelessWidget {
                 ),
               ),
               OutlinedButton(
-                onPressed: null,
+                onPressed: _handleViewMorePressed,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primaryBackground,
                   side: const BorderSide(
@@ -86,5 +92,19 @@ class MostRecentSectionHeader extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _handleViewMorePressed() {
+    if (scrollController != null) {
+      scrollController!.animateTo(
+        scrollController!.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+
+    if (onViewMorePressed != null) {
+      onViewMorePressed!();
+    }
   }
 }

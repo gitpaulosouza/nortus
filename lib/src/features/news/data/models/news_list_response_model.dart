@@ -7,7 +7,7 @@ class NewsListResponseModel {
 
   const NewsListResponseModel({required this.pagination, required this.data});
 
-  factory NewsListResponseModel.fromJson(Map<String, dynamic> json) {
+  static NewsListResponseModel fromJson(Map<String, dynamic> json) {
     return NewsListResponseModel(
       pagination: NewsPaginationModel.fromJson(
         json['pagination'] as Map<String, dynamic>? ?? {},

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nortus/src/features/news/data/cache/favorites_cache_service.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
 import 'package:nortus/src/features/news/data/repositories/news_repository.dart';
 import 'package:nortus/src/features/news/presentation/bloc/news_event.dart';
@@ -6,8 +7,9 @@ import 'package:nortus/src/features/news/presentation/bloc/news_state.dart';
 
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
   final NewsRepository repository;
+  final FavoritesCacheService favoritesCacheService;
 
-  NewsBloc(this.repository) : super(NewsState.initial()) {
+  NewsBloc(this.repository, this.favoritesCacheService) : super(NewsState.initial()) {
     on<NewsStarted>(_onNewsStarted);
     on<NewsLoadMoreRequested>(_onNewsLoadMoreRequested);
     on<NewsRefreshed>(_onNewsRefreshed);
@@ -21,6 +23,9 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     NewsStarted event,
     Emitter<NewsState> emit,
   ) async {
+    final savedFavorites = await favoritesCacheService.loadFavorites();
+    emit(state.copyWith(favoriteIds: savedFavorites));
+    
     await _loadFirstPage(emit);
   }
 
@@ -178,7 +183,6 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   ) {
     var filtered = items;
 
-    // Apply search filter
     if (query.isNotEmpty) {
       filtered =
           filtered.where((news) {
@@ -205,7 +209,6 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
           }).toList();
     }
 
-    // Apply category filter
     if (selectedCategory != 'Todas as notícias') {
       filtered =
           filtered.where((news) {
@@ -261,6 +264,8 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     }
 
     final wasAdded = updatedFavorites.contains(newsId);
+
+    favoritesCacheService.saveFavorites(updatedFavorites);
 
     emit(
       state.copyWith(

@@ -4,7 +4,7 @@ class NewsImageModel {
 
   const NewsImageModel({required this.src, required this.alt});
 
-  factory NewsImageModel.fromJson(Map<String, dynamic> json) {
+  static NewsImageModel fromJson(Map<String, dynamic> json) {
     return NewsImageModel(
       src: json['src'] as String? ?? '',
       alt: json['alt'] as String? ?? '',

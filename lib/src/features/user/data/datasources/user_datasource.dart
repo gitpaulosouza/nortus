@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:either_dart/either.dart';
 import 'package:nortus/src/core/error/app_error.dart';
+import 'package:nortus/src/features/user/data/models/user_list_response_model.dart';
 import 'package:nortus/src/features/user/data/models/user_model.dart';
 import 'package:nortus/src/features/user/data/models/user_response_model.dart';
 import 'package:nortus/src/features/user/mock/user_mock_factory.dart';
@@ -27,18 +28,17 @@ class UserDatasourceImpl implements UserDatasource {
         return Left(NetworkError('Erro de rede. Tente novamente.'));
       }
 
-      if (response.data == null || response.data is! Map<String, dynamic>) {
-        if (_shouldUseMock(response.data)) {
-          return Right(UserMockFactory.createMockUser());
+      if (response.data is List) {
+        final listResponse = UserListResponseModel.fromJson(response.data);
+
+        if (listResponse.isEmpty) {
+          return Left(UnknownError('Lista de usuários vazia.'));
         }
-        return Left(UnknownError('Resposta inválida do servidor.'));
+
+        return Right(listResponse.firstOrNull!);
       }
 
-      final userResponse = UserResponseModel.fromJson(
-        response.data as Map<String, dynamic>,
-      );
-
-      return Right(userResponse.data);
+      return Left(UnknownError('Resposta inválida do servidor.'));
     } on DioException catch (error) {
       if (_shouldUseMock(error.response?.data ?? error.message)) {
         return Right(UserMockFactory.createMockUser());
