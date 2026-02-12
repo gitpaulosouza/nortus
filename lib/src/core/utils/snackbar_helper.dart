@@ -36,11 +36,30 @@ class SnackbarHelper {
     );
   }
 
+  static void showNeutral(
+    BuildContext context,
+    String title, {
+    String? subtitle,
+  }) {
+    _showOverlay(
+      context,
+      title,
+      subtitle: subtitle,
+      backgroundColor: AppColors.white,
+      textColor: AppColors.primaryColor,
+      icon: Icons.info_outline,
+      iconBackgroundColor: AppColors.primaryColor,
+      duration: const Duration(seconds: 3),
+    );
+  }
+
   static void _showOverlay(
     BuildContext context,
     String title, {
     String? subtitle,
     required Color backgroundColor,
+    Color? textColor,
+    Color? iconBackgroundColor,
     required IconData icon,
     required Duration duration,
   }) {
@@ -77,11 +96,15 @@ class SnackbarHelper {
                   Container(
                     width: 28,
                     height: 28,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
+                    decoration: BoxDecoration(
+                      color: iconBackgroundColor ?? Colors.white,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(icon, color: backgroundColor, size: 16),
+                    child: Icon(
+                      icon,
+                      color: backgroundColor,
+                      size: 16,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -95,8 +118,8 @@ class SnackbarHelper {
                           Text(
                             title,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: textColor ?? Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w400,
                             ),
@@ -105,8 +128,8 @@ class SnackbarHelper {
                             Text(
                               subtitle,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: textColor ?? Colors.white,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -117,7 +140,7 @@ class SnackbarHelper {
                   ),
                   IconButton(
                     onPressed: _removeCurrent,
-                    icon: const Icon(Icons.close, color: Colors.white),
+                    icon: Icon(Icons.close, color: textColor ?? Colors.white),
                     iconSize: 18,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
