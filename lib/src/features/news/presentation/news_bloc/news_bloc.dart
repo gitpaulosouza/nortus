@@ -17,15 +17,28 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<NewsFavoriteToggled>(_onNewsFavoriteToggled);
     on<NewsFavoriteFeedbackConsumed>(_onNewsFavoriteFeedbackConsumed);
     on<NewsCategorySelected>(_onNewsCategorySelected);
+    
+    // Carrega favoritos assim que o BLoC é criado
+    _loadFavoritesFromCache();
+  }
+
+  Future<void> _loadFavoritesFromCache() async {
+    try {
+      final savedFavorites = await favoritesCacheService.loadFavorites();
+      final savedFavoriteNews = await favoritesCacheService.loadFavoriteNews();
+      emit(state.copyWith(
+        favoriteIds: savedFavorites,
+        cachedFavoriteNews: savedFavoriteNews,
+      ));
+    } catch (_) {
+      // Ignora erro ao carregar favoritos do cache
+    }
   }
 
   Future<void> _onNewsStarted(
     NewsStarted event,
     Emitter<NewsState> emit,
   ) async {
-    final savedFavorites = await favoritesCacheService.loadFavorites();
-    emit(state.copyWith(favoriteIds: savedFavorites));
-    
     await _loadFirstPage(emit);
   }
 
@@ -257,19 +270,41 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     final newsId = event.news.id;
     final updatedFavorites = Set<int>.from(state.favoriteIds);
 
+    final wasAdded = !updatedFavorites.contains(newsId);
+    
     if (updatedFavorites.contains(newsId)) {
       updatedFavorites.remove(newsId);
+      favoritesCacheService.removeFavoriteNews(newsId);
     } else {
       updatedFavorites.add(newsId);
+      favoritesCacheService.addFavoriteNews(event.news);
     }
 
-    final wasAdded = updatedFavorites.contains(newsId);
-
     favoritesCacheService.saveFavorites(updatedFavorites);
+
+    // Atualiza a lista de notícias favoritas no cache
+    final updatedCachedFavorites = <NewsModel>[];
+    
+    // Adiciona as notícias do cache que ainda são favoritas
+    for (final news in state.cachedFavoriteNews) {
+      if (updatedFavorites.contains(news.id) && news.id != newsId) {
+        updatedCachedFavorites.add(news);
+      }
+    }
+    
+    // Adiciona as notícias da lista atual que são favoritas
+    for (final news in state.items) {
+      if (updatedFavorites.contains(news.id)) {
+        // Remove duplicatas e adiciona
+        updatedCachedFavorites.removeWhere((n) => n.id == news.id);
+        updatedCachedFavorites.add(news);
+      }
+    }
 
     emit(
       state.copyWith(
         favoriteIds: updatedFavorites,
+        cachedFavoriteNews: updatedCachedFavorites,
         lastFavoriteToggledId: newsId,
         lastFavoriteWasAdded: wasAdded,
       ),

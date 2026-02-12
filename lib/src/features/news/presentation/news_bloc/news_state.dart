@@ -4,6 +4,7 @@ import 'package:nortus/src/features/news/data/models/news_model.dart';
 class NewsState {
   final List<NewsModel> items;
   final List<NewsModel> visibleItems;
+  final List<NewsModel> cachedFavoriteNews; // Notícias favoritas salvas no cache
   final String searchQuery;
   final String selectedCategory;
   final List<String> categories;
@@ -20,6 +21,7 @@ class NewsState {
   const NewsState({
     required this.items,
     required this.visibleItems,
+    required this.cachedFavoriteNews,
     required this.searchQuery,
     required this.selectedCategory,
     required this.categories,
@@ -38,6 +40,7 @@ class NewsState {
     return const NewsState(
       items: [],
       visibleItems: [],
+      cachedFavoriteNews: [],
       searchQuery: '',
       selectedCategory: 'Todas as notícias',
       categories: ['Todas as notícias'],
@@ -56,6 +59,7 @@ class NewsState {
   NewsState copyWith({
     List<NewsModel>? items,
     List<NewsModel>? visibleItems,
+    List<NewsModel>? cachedFavoriteNews,
     String? searchQuery,
     String? selectedCategory,
     List<String>? categories,
@@ -74,6 +78,7 @@ class NewsState {
     return NewsState(
       items: items ?? this.items,
       visibleItems: visibleItems ?? this.visibleItems,
+      cachedFavoriteNews: cachedFavoriteNews ?? this.cachedFavoriteNews,
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       categories: categories ?? this.categories,
@@ -96,6 +101,28 @@ class NewsState {
   }
 
   List<NewsModel> get favoriteItems {
-    return items.where((news) => favoriteIds.contains(news.id)).toList();
+    // Se items está vazio, usa as notícias favoritas do cache
+    if (items.isEmpty) {
+      return cachedFavoriteNews;
+    }
+    
+    // Combina itens da lista atual com os do cache
+    final Map<int, NewsModel> newsMap = {};
+    
+    // Adiciona as notícias do cache
+    for (final news in cachedFavoriteNews) {
+      if (favoriteIds.contains(news.id)) {
+        newsMap[news.id] = news;
+      }
+    }
+    
+    // Sobrescreve/adiciona com as notícias da lista atual (mais recentes)
+    for (final news in items) {
+      if (favoriteIds.contains(news.id)) {
+        newsMap[news.id] = news;
+      }
+    }
+    
+    return newsMap.values.toList();
   }
 }
