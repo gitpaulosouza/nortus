@@ -27,20 +27,19 @@ O projeto prioriza:
 
 As imagens estão disponíveis em `docs/screenshots/`.
 
-### Splash Screen  
-<img src="docs/screenshots/splash.png" width="300" />
+<p align="center">
+  <img src="docs/screenshots/splash.png" width="200"/>
+  <img src="docs/screenshots/login.png" width="200"/>
+</p>
 
-### Login  
-<img src="docs/screenshots/login.png" width="300" />
+<p align="center">
+  <img src="docs/screenshots/news_list.png" width="200"/>
+  <img src="docs/screenshots/details.png" width="200"/>
+</p>
 
-### Lista de Notícias  
-<img src="docs/screenshots/news_list.png" width="300" />
-
-### Detalhes da Notícia  
-<img src="docs/screenshots/details.png" width="300" />
-
-### Perfil  
-<img src="docs/screenshots/profile.png" width="300" />
+<p align="center">
+  <img src="docs/screenshots/profile.png" width="200"/>
+</p>
 
 ---
 
