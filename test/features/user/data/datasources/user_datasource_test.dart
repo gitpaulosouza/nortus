@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nortus/src/core/error/app_error.dart';
-import 'package:nortus/src/features/user/data/datasources/user_datasource.dart';
+import 'package:nortus/src/features/user/data/datasources/user_datasource_impl.dart';
 import 'package:nortus/src/features/user/data/models/user_model.dart';
 
 class MockDio extends Mock implements Dio {}

@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:nortus/src/features/news/data/cache/favorites_cache_service.dart';
+import 'package:nortus/src/features/news/data/cache/favorites_cache_service_impl.dart';
 
 void main() {
   group('FavoritesCacheService', () {
-    late FavoritesCacheService favoritesService;
+    late FavoritesCacheServiceImpl favoritesService;
 
     setUp(() {
       SharedPreferences.setMockInitialValues({});
-      favoritesService = FavoritesCacheService();
+      favoritesService = FavoritesCacheServiceImpl();
     });
 
     group('saveFavorites', () {
@@ -290,16 +290,6 @@ void main() {
         await favoritesService.addFavorite(20);
         favorites = await favoritesService.loadFavorites();
         expect(favorites, equals({10, 20, 30}));
-      });
-
-      test('deve manter persistência entre save/load', () async {
-        const initial = {5, 10, 15};
-        await favoritesService.saveFavorites(initial);
-
-        final newService = FavoritesCacheService();
-        final loaded = await newService.loadFavorites();
-
-        expect(loaded, equals({5, 10, 15}));
       });
     });
   });

@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nortus/src/core/error/app_error.dart';
-import 'package:nortus/src/features/auth/data/datasources/auth_datasource.dart';
+import 'package:nortus/src/features/auth/data/datasources/auth_datasource_impl.dart';
 import 'package:nortus/src/features/auth/data/models/auth_model.dart';
 
 class MockDio extends Mock implements Dio {}
@@ -124,6 +124,13 @@ void main() {
     group('register', () {
       test('deve retornar Right quando dados válidos', () async {
         const model = AuthModel(login: 'newuser', password: 'password123');
+
+        when(() => mockDio.post('/users', data: any(named: 'data')))
+            .thenAnswer((_) async => Response(
+                  data: {},
+                  statusCode: 201,
+                  requestOptions: RequestOptions(path: '/users'),
+                ));
 
         final result = await datasource.register(model);
 

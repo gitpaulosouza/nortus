@@ -5,7 +5,7 @@ import 'package:nortus/src/core/error/app_error.dart';
 import 'package:nortus/src/features/user/data/datasources/user_datasource.dart';
 import 'package:nortus/src/features/user/data/models/adress_user_model.dart';
 import 'package:nortus/src/features/user/data/models/user_model.dart';
-import 'package:nortus/src/features/user/data/repositories/user_repository.dart';
+import 'package:nortus/src/features/user/data/repositories/user_repository_impl.dart';
 
 class MockUserDatasource extends Mock implements UserDatasource {}
 

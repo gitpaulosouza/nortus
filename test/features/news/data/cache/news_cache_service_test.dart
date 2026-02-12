@@ -2,15 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:nortus/src/features/news/data/cache/news_cache_service.dart';
+import 'package:nortus/src/features/news/data/cache/news_cache_service_impl.dart';
 
 void main() {
   group('NewsCacheService', () {
-    late NewsCacheService cacheService;
+    late NewsCacheServiceImpl cacheService;
 
     setUp(() {
       SharedPreferences.setMockInitialValues({});
-      cacheService = NewsCacheService();
+      cacheService = NewsCacheServiceImpl();
     });
 
     group('savePage', () {
