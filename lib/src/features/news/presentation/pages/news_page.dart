@@ -163,7 +163,10 @@ class _NewsPageState extends State<NewsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  MostRecentSectionHeader(),
+                  MostRecentSectionHeader(
+                    onViewMorePressed: _onLoadMorePressed,
+                    scrollController: _scrollController,
+                  ),
                   SizedBox(height: 20),
                   ...displayItems
                       .skip(6)
