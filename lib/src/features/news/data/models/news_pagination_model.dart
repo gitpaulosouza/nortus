@@ -1,4 +1,6 @@
-class NewsPaginationModel {
+import 'package:equatable/equatable.dart';
+
+class NewsPaginationModel extends Equatable {
   final int page;
   final int pageSize;
   final int totalPages;
@@ -10,6 +12,9 @@ class NewsPaginationModel {
     required this.totalPages,
     required this.totalItems,
   });
+
+  @override
+  List<Object?> get props => [page, pageSize, totalPages, totalItems];
 
   static NewsPaginationModel fromJson(Map<String, dynamic> json) {
     return NewsPaginationModel(

@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
-import 'package:nortus/src/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:nortus/src/features/splash/presentation/splash_bloc/splash_bloc.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});

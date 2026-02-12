@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
-import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
-import 'package:nortus/src/features/news/presentation/bloc/news_event.dart';
-import 'package:nortus/src/features/news/presentation/bloc/news_state.dart';
+import 'package:nortus/src/features/news/presentation/news_bloc/news_bloc.dart';
+import 'package:nortus/src/features/news/presentation/news_bloc/news_event.dart';
+import 'package:nortus/src/features/news/presentation/news_bloc/news_state.dart';
 
 class NewsSearchBar extends StatefulWidget {
   final VoidCallback? onMenuPressed;

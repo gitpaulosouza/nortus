@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_event.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_form_mode.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_state.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_bloc.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_event.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_form_mode.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_state.dart';
 
 class AuthSubmitButton extends StatelessWidget {
   const AuthSubmitButton({super.key});

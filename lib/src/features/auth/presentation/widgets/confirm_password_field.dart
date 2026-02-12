@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_event.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_state.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_bloc.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_event.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_state.dart';
 
 class ConfirmPasswordField extends StatelessWidget {
   const ConfirmPasswordField({super.key});

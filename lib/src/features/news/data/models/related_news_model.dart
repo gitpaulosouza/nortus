@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:nortus/src/features/news/data/models/news_author_model.dart';
 
-class RelatedNewsModel {
+class RelatedNewsModel extends Equatable {
   final int id;
   final String title;
   final String imageUrl;
@@ -16,6 +17,9 @@ class RelatedNewsModel {
     required this.publishedAt,
     required this.authors,
   });
+
+  @override
+  List<Object?> get props => [id, title, imageUrl, categories, publishedAt, authors];
 
   static RelatedNewsModel fromJson(Map<String, dynamic> json) {
     return RelatedNewsModel(

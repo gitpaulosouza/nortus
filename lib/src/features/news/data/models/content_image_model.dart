@@ -1,4 +1,6 @@
-class ContentImageModel {
+import 'package:equatable/equatable.dart';
+
+class ContentImageModel extends Equatable {
   final String imageUrl;
   final String caption;
 
@@ -6,6 +8,9 @@ class ContentImageModel {
     required this.imageUrl,
     required this.caption,
   });
+
+  @override
+  List<Object?> get props => [imageUrl, caption];
 
   static ContentImageModel fromJson(Map<String, dynamic> json) {
     return ContentImageModel(

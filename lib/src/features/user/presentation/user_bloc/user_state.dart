@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:nortus/src/core/error/app_error.dart';
 import 'package:nortus/src/features/user/data/models/user_model.dart';
 
-class UserState {
+class UserState extends Equatable {
   final UserModel? user;
   final UserModel? draft;
   final bool isLoading;
@@ -45,4 +46,15 @@ class UserState {
       saveSuccess: clearSuccess ? false : (saveSuccess ?? this.saveSuccess),
     );
   }
+
+  @override
+  List<Object?> get props => [
+        user,
+        draft,
+        isLoading,
+        isSaving,
+        error,
+        hasUnsavedChanges,
+        saveSuccess,
+      ];
 }

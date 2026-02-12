@@ -1,9 +1,13 @@
+import 'package:equatable/equatable.dart';
 import 'package:nortus/src/features/user/data/models/user_model.dart';
 
-class UserListResponseModel {
+class UserListResponseModel extends Equatable {
   final List<UserModel> users;
 
   const UserListResponseModel({required this.users});
+
+  @override
+  List<Object?> get props => [users];
 
   static UserListResponseModel fromJson(dynamic json) {
     if (json is! List) {

@@ -5,8 +5,8 @@ import 'package:nortus/src/features/news/data/datasources/news_datasource.dart';
 import 'package:nortus/src/features/news/data/datasources/news_details_datasource.dart';
 import 'package:nortus/src/features/news/data/repositories/news_details_repository.dart';
 import 'package:nortus/src/features/news/data/repositories/news_repository.dart';
-import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
-import 'package:nortus/src/features/news/presentation/bloc_details/news_details_bloc.dart';
+import 'package:nortus/src/features/news/presentation/news_bloc/news_bloc.dart';
+import 'package:nortus/src/features/news/presentation/news_details_bloc/news_details_bloc.dart';
 
 Future<void> configureNewsDependencies(GetIt getIt) async {
   getIt.registerLazySingleton<NewsDatasource>(

@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:nortus/src/features/user/data/models/adress_user_model.dart';
 
 DateTime _parseDate(dynamic value) {
@@ -18,7 +19,7 @@ int _parseId(dynamic value) {
   return 0;
 }
 
-class UserModel {
+class UserModel extends Equatable {
   final int id;
   final String name;
   final String email;
@@ -38,6 +39,18 @@ class UserModel {
     required this.address,
     required this.updatedAt,
   });
+
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    email,
+    language,
+    dateFormat,
+    timezone,
+    address,
+    updatedAt,
+  ];
 
   static UserModel fromJson(Map<String, dynamic> json) {
     return UserModel(

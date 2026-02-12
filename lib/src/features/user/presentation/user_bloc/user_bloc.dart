@@ -4,8 +4,8 @@ import 'package:nortus/src/core/utils/validators.dart';
 import 'package:nortus/src/features/user/data/models/adress_user_model.dart';
 import 'package:nortus/src/features/user/data/models/user_model.dart';
 import 'package:nortus/src/features/user/data/repositories/user_repository.dart';
-import 'package:nortus/src/features/user/presentation/bloc/user_event.dart';
-import 'package:nortus/src/features/user/presentation/bloc/user_state.dart';
+import 'package:nortus/src/features/user/presentation/user_bloc/user_event.dart';
+import 'package:nortus/src/features/user/presentation/user_bloc/user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository repository;

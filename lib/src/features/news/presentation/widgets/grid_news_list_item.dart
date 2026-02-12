@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/utils/date_formatter.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
-import 'package:nortus/src/features/news/presentation/bloc/news_bloc.dart';
-import 'package:nortus/src/features/news/presentation/bloc/news_event.dart';
-import 'package:nortus/src/features/news/presentation/bloc/news_state.dart';
+import 'package:nortus/src/features/news/presentation/news_bloc/news_bloc.dart';
+import 'package:nortus/src/features/news/presentation/news_bloc/news_event.dart';
+import 'package:nortus/src/features/news/presentation/news_bloc/news_state.dart';
 import 'package:nortus/src/features/news/presentation/widgets/nortus_cached_image.dart';
 
 class GridNewsListItem extends StatelessWidget {
