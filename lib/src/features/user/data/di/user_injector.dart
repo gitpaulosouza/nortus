@@ -6,13 +6,9 @@ import 'package:nortus/src/features/user/data/repositories/user_repository_impl.
 import 'package:nortus/src/features/user/presentation/user_bloc/user_bloc.dart';
 
 Future<void> configureUserDependencies(GetIt getIt) async {
-  getIt.registerLazySingleton<UserDatasource>(
-    () => UserDatasourceImpl(getIt()),
-  );
+  getIt.registerFactory<UserDatasource>(() => UserDatasourceImpl(getIt()));
 
-  getIt.registerLazySingleton<UserRepository>(
-    () => UserRepositoryImpl(getIt()),
-  );
+  getIt.registerFactory<UserRepository>(() => UserRepositoryImpl(getIt()));
 
   getIt.registerFactory<UserBloc>(() => UserBloc(getIt()));
 }

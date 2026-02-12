@@ -14,27 +14,21 @@ import 'package:nortus/src/features/news/presentation/news_bloc/news_bloc.dart';
 import 'package:nortus/src/features/news/presentation/news_details_bloc/news_details_bloc.dart';
 
 Future<void> configureNewsDependencies(GetIt getIt) async {
-  getIt.registerLazySingleton<NewsDatasource>(
-    () => NewsDatasourceImpl(getIt()),
-  );
+  getIt.registerFactory<NewsDatasource>(() => NewsDatasourceImpl(getIt()));
 
-  getIt.registerLazySingleton<NewsCacheService>(
-    () => NewsCacheServiceImpl(),
-  );
+  getIt.registerLazySingleton<NewsCacheService>(() => NewsCacheServiceImpl());
 
   getIt.registerLazySingleton<FavoritesCacheService>(
     () => FavoritesCacheServiceImpl(),
   );
 
-  getIt.registerLazySingleton<NewsDetailsDatasource>(
+  getIt.registerFactory<NewsDetailsDatasource>(
     () => NewsDetailsDatasourceImpl(getIt()),
   );
 
-  getIt.registerLazySingleton<NewsRepository>(
-    () => NewsRepository(getIt(), getIt()),
-  );
+  getIt.registerFactory<NewsRepository>(() => NewsRepository(getIt(), getIt()));
 
-  getIt.registerLazySingleton<NewsDetailsRepository>(
+  getIt.registerFactory<NewsDetailsRepository>(
     () => NewsDetailsRepositoryImpl(getIt()),
   );
 
