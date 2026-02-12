@@ -1,11 +1,10 @@
 import 'dart:convert';
+import 'package:nortus/src/core/storage/prefs_keys.dart';
 import 'package:nortus/src/features/news/data/cache/favorites_cache_service.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoritesCacheServiceImpl implements FavoritesCacheService {
-  static const String _favoritesKey = 'news_favorites';
-  static const String _favoriteNewsKey = 'news_favorites_data';
 
   Future<SharedPreferences> get _prefs async {
     return SharedPreferences.getInstance();
@@ -16,7 +15,7 @@ class FavoritesCacheServiceImpl implements FavoritesCacheService {
     final prefs = await _prefs;
     final favoritesList = favoriteIds.toList();
     await prefs.setStringList(
-      _favoritesKey,
+      PrefsKeys.newsFavorites.key,
       favoritesList.map((id) => id.toString()).toList(),
     );
   }
@@ -25,11 +24,11 @@ class FavoritesCacheServiceImpl implements FavoritesCacheService {
   Future<Set<int>> loadFavorites() async {
     try {
       final prefs = await _prefs;
-      final savedFavorites = prefs.getStringList(_favoritesKey) ?? [];
+      final savedFavorites = prefs.getStringList(PrefsKeys.newsFavorites.key) ?? [];
       return savedFavorites.map((id) => int.parse(id)).toSet();
     } catch (_) {
       final prefs = await _prefs;
-      await prefs.remove(_favoritesKey);
+      await prefs.remove(PrefsKeys.newsFavorites.key);
       return {};
     }
   }
@@ -37,8 +36,8 @@ class FavoritesCacheServiceImpl implements FavoritesCacheService {
   @override
   Future<void> clear() async {
     final prefs = await _prefs;
-    await prefs.remove(_favoritesKey);
-    await prefs.remove(_favoriteNewsKey);
+    await prefs.remove(PrefsKeys.newsFavorites.key);
+    await prefs.remove(PrefsKeys.newsFavoritesData.key);
   }
 
   @override
@@ -60,7 +59,7 @@ class FavoritesCacheServiceImpl implements FavoritesCacheService {
     try {
       final prefs = await _prefs;
       final newsJsonList = news.map((n) => json.encode(n.toJson())).toList();
-      await prefs.setStringList(_favoriteNewsKey, newsJsonList);
+      await prefs.setStringList(PrefsKeys.newsFavoritesData.key, newsJsonList);
     } catch (_) {
     }
   }
@@ -69,7 +68,7 @@ class FavoritesCacheServiceImpl implements FavoritesCacheService {
   Future<List<NewsModel>> loadFavoriteNews() async {
     try {
       final prefs = await _prefs;
-      final newsJsonList = prefs.getStringList(_favoriteNewsKey) ?? [];
+      final newsJsonList = prefs.getStringList(PrefsKeys.newsFavoritesData.key) ?? [];
       return newsJsonList
           .map((jsonStr) => NewsModel.fromJson(json.decode(jsonStr)))
           .toList();
