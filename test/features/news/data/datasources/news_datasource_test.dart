@@ -1,19 +1,21 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nortus/src/core/error/app_error.dart';
+import 'package:nortus/src/core/http/http_client.dart';
+import 'package:nortus/src/core/http/http_exception.dart';
+import 'package:nortus/src/core/http/http_response.dart';
 import 'package:nortus/src/features/news/data/datasources/news_datasource_impl.dart';
 import 'package:nortus/src/features/news/data/models/news_list_response_model.dart';
 
-class MockDio extends Mock implements Dio {}
+class MockHttpClient extends Mock implements HttpClient {}
 
 void main() {
-  late MockDio mockDio;
+  late MockHttpClient mockHttpClient;
   late NewsDatasourceImpl datasource;
 
   setUp(() {
-    mockDio = MockDio();
-    datasource = NewsDatasourceImpl(mockDio);
+    mockHttpClient = MockHttpClient();
+    datasource = NewsDatasourceImpl(mockHttpClient);
   });
 
   group('NewsDataSource', () {
@@ -35,11 +37,11 @@ void main() {
           'totalPages': 10,
         };
 
-        when(() => mockDio.get('/news', queryParameters: any(named: 'queryParameters')))
-            .thenAnswer((_) async => Response(
+        when(() => mockHttpClient.get('/news',
+                queryParameters: any(named: 'queryParameters')))
+            .thenAnswer((_) async => HttpResponse(
                   data: responseData,
                   statusCode: 200,
-                  requestOptions: RequestOptions(path: '/news'),
                 ));
 
         final result = await datasource.fetchNews(page: 1);
@@ -68,14 +70,12 @@ void main() {
       });
 
       test('deve retornar Left com NetworkError quando DioException', () async {
-        when(() => mockDio.get('/news', queryParameters: any(named: 'queryParameters')))
-            .thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/news'),
-          response: Response(
-            data: 'Network error',
-            statusCode: 500,
-            requestOptions: RequestOptions(path: '/news'),
-          ),
+        when(() => mockHttpClient.get('/news',
+                queryParameters: any(named: 'queryParameters')))
+            .thenThrow(const HttpException(
+          message: 'Network error',
+          statusCode: 500,
+          data: 'Network error',
         ));
 
         final result = await datasource.fetchNews(page: 1);
@@ -90,16 +90,14 @@ void main() {
       });
 
       test('deve extrair mensagem de erro do servidor quando disponível', () async {
-        when(() => mockDio.get('/news', queryParameters: any(named: 'queryParameters')))
-            .thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/news'),
-          response: Response(
-            data: <String, dynamic>{
-              'errors': ['Custom error message'],
-            },
-            statusCode: 400,
-            requestOptions: RequestOptions(path: '/news'),
-          ),
+        when(() => mockHttpClient.get('/news',
+                queryParameters: any(named: 'queryParameters')))
+            .thenThrow(const HttpException(
+          message: 'Custom error message',
+          statusCode: 400,
+          data: <String, dynamic>{
+            'errors': ['Custom error message'],
+          },
         ));
 
         final result = await datasource.fetchNews(page: 1);
@@ -113,7 +111,8 @@ void main() {
       });
 
       test('deve retornar UnknownError quando exceção desconhecida', () async {
-        when(() => mockDio.get('/news', queryParameters: any(named: 'queryParameters')))
+        when(() => mockHttpClient.get('/news',
+                queryParameters: any(named: 'queryParameters')))
             .thenThrow(Exception('Unknown'));
 
         final result = await datasource.fetchNews(page: 1);
