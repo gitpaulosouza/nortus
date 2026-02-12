@@ -115,12 +115,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     emit(state.copyWith(isSubmitting: true, clearError: true));
 
-    final model = AuthModel(login: state.email, password: state.password);
+    if (state.mode == AuthFormMode.register) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      emit(
+        state.copyWith(
+          mode: AuthFormMode.login,
+          isSubmitting: false,
+          isRegistrationSuccess: true,
+          isSuccess: false,
+          email: '',
+          password: '',
+          confirmPassword: '',
+          isEmailValid: false,
+          isPasswordValid: false,
+          isConfirmPasswordValid: false,
+        ),
+      );
+      return;
+    }
 
-    final result =
-        state.mode == AuthFormMode.login
-            ? await repository.login(model, keepLoggedIn: state.keepLoggedIn)
-            : await repository.register(model);
+    final model = AuthModel(login: state.email, password: state.password);
+    final result = await repository.login(model, keepLoggedIn: state.keepLoggedIn);
 
     result.fold(
       (failure) {
@@ -133,17 +148,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       },
       (_) {
-        if (state.mode == AuthFormMode.login) {
-          emit(state.copyWith(isSubmitting: false, isSuccess: true));
-        } else {
-          emit(
-            state.copyWith(
-              isSubmitting: false,
-              isRegistrationSuccess: true,
-              isSuccess: false,
-            ),
-          );
-        }
+        emit(state.copyWith(isSubmitting: false, isSuccess: true));
       },
     );
   }

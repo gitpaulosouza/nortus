@@ -24,7 +24,7 @@ class LoginPage extends StatelessWidget {
                   child: Opacity(
                     opacity: 0.1,
                     child: Image.asset(
-                      'assets/images/nortus_logo.png',
+                      'assets/images/nortus-logo.png',
                       width: size.width * 1.5,
                       fit: BoxFit.contain,
                       color: AppColors.bottomSheetBackground,
@@ -36,7 +36,7 @@ class LoginPage extends StatelessWidget {
                   top: size.height * 0.15,
                   left: 24,
                   child: SvgPicture.asset(
-                    'assets/images/nortus_wordmark.svg',
+                    'assets/images/nortus-wordmark.svg',
                     width: 140,
                     colorFilter: const ColorFilter.mode(
                       AppColors.primaryColor,

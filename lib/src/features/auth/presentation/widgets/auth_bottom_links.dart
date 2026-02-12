@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
+import 'package:nortus/src/core/utils/snackbar_helper.dart';
 
 class AuthBottomLinks extends StatelessWidget {
   const AuthBottomLinks({super.key});
@@ -10,7 +11,13 @@ class AuthBottomLinks extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            SnackbarHelper.showNeutral(
+              context,
+              'Função não disponível',
+              subtitle: 'Essa função não está disponível no momento.',
+            );
+          },
           child: const Text(
             'Esqueci a senha',
             style: TextStyle(
@@ -32,7 +39,13 @@ class AuthBottomLinks extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            SnackbarHelper.showNeutral(
+              context,
+              'Função não disponível',
+              subtitle: 'Essa função não está disponível no momento.',
+            );
+          },
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,

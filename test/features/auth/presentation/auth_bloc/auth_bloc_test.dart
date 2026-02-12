@@ -197,8 +197,6 @@ void main() {
     blocTest<AuthBloc, AuthState>(
       'deve fazer registro com sucesso',
       build: () {
-        when(() => mockRepository.register(any()))
-            .thenAnswer((_) async => const Right(null));
         return AuthBloc(mockRepository);
       },
       seed: () => AuthState.initial().copyWith(
@@ -211,6 +209,7 @@ void main() {
         isConfirmPasswordValid: true,
       ),
       act: (bloc) => bloc.add(AuthSubmitRequested()),
+      wait: const Duration(milliseconds: 600),
       expect: () => [
         AuthState.initial().copyWith(
           mode: AuthFormMode.register,
@@ -223,13 +222,13 @@ void main() {
           isSubmitting: true,
         ),
         AuthState.initial().copyWith(
-          mode: AuthFormMode.register,
-          email: 'new@example.com',
-          password: 'Password123!',
-          confirmPassword: 'Password123!',
-          isEmailValid: true,
-          isPasswordValid: true,
-          isConfirmPasswordValid: true,
+          mode: AuthFormMode.login,
+          email: '',
+          password: '',
+          confirmPassword: '',
+          isEmailValid: false,
+          isPasswordValid: false,
+          isConfirmPasswordValid: false,
           isSubmitting: false,
           isSuccess: false,
           isRegistrationSuccess: true,

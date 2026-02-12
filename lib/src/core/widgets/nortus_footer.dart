@@ -18,7 +18,7 @@ class NortusFooter extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SvgPicture.asset(
-                'assets/images/nortus_wordmark.svg',
+                'assets/images/nortus-wordmark.svg',
                 height: 22,
                 colorFilter: const ColorFilter.mode(
                   AppColors.appNameHighlight,

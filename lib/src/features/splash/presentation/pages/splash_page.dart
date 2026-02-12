@@ -31,7 +31,7 @@ class SplashPage extends StatelessWidget {
       backgroundColor: AppColors.primaryBackground,
       body: Center(
         child: SvgPicture.asset(
-          'assets/images/nortus_wordmark.svg',
+          'assets/images/nortus-wordmark.svg',
           width: size.width * 0.45,
           colorFilter: const ColorFilter.mode(
             AppColors.white,

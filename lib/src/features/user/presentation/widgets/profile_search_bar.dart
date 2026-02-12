@@ -78,7 +78,7 @@ class _ProfileSearchBarState extends State<ProfileSearchBar> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         SvgPicture.asset(
-          'assets/images/nortus_wordmark.svg',
+          'assets/images/nortus-wordmark.svg',
           height: 24,
           colorFilter: const ColorFilter.mode(
             AppColors.textPrimary,
