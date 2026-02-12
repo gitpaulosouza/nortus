@@ -28,19 +28,19 @@ O projeto prioriza:
 As imagens estão disponíveis em `docs/screenshots/`.
 
 ### Splash Screen  
-![Splash](docs/screenshots/splash.png)
+<img src="docs/screenshots/splash.png" width="300" />
 
 ### Login  
-![Login](docs/screenshots/login.png)
+<img src="docs/screenshots/login.png" width="300" />
 
 ### Lista de Notícias  
-![Lista](docs/screenshots/news_list.png)
+<img src="docs/screenshots/news_list.png" width="300" />
 
 ### Detalhes da Notícia  
-![Detalhes](docs/screenshots/details.png)
+<img src="docs/screenshots/details.png" width="300" />
 
 ### Perfil  
-![Perfil](docs/screenshots/profile.png)
+<img src="docs/screenshots/profile.png" width="300" />
 
 ---
 
