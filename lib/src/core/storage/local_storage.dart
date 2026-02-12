@@ -1,3 +1,4 @@
+import 'package:nortus/src/core/storage/prefs_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class LocalStorage {
@@ -6,7 +7,6 @@ abstract class LocalStorage {
 }
 
 class LocalStorageImpl implements LocalStorage {
-  static const String _isLoggedInKey = 'isLoggedIn';
 
   Future<SharedPreferences> get _prefs async {
     return SharedPreferences.getInstance();
@@ -15,12 +15,12 @@ class LocalStorageImpl implements LocalStorage {
   @override
   Future<bool> isLoggedIn() async {
     final prefs = await _prefs;
-    return prefs.getBool(_isLoggedInKey) ?? false;
+    return prefs.getBool(PrefsKeys.isLoggedIn.key) ?? false;
   }
 
   @override
   Future<void> setLoggedIn(bool value) async {
     final prefs = await _prefs;
-    await prefs.setBool(_isLoggedInKey, value);
+    await prefs.setBool(PrefsKeys.isLoggedIn.key, value);
   }
 }
