@@ -62,7 +62,6 @@ class FavoritesCacheServiceImpl implements FavoritesCacheService {
       final newsJsonList = news.map((n) => json.encode(n.toJson())).toList();
       await prefs.setStringList(_favoriteNewsKey, newsJsonList);
     } catch (_) {
-      // Ignora erro ao salvar
     }
   }
 
@@ -82,7 +81,6 @@ class FavoritesCacheServiceImpl implements FavoritesCacheService {
   @override
   Future<void> addFavoriteNews(NewsModel news) async {
     final favoriteNews = await loadFavoriteNews();
-    // Remove se já existir para evitar duplicatas
     favoriteNews.removeWhere((n) => n.id == news.id);
     favoriteNews.add(news);
     await saveFavoriteNews(favoriteNews);

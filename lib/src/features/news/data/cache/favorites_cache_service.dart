@@ -7,7 +7,6 @@ abstract class FavoritesCacheService {
   Future<void> addFavorite(int newsId);
   Future<void> removeFavorite(int newsId);
   
-  // Novos métodos para salvar e carregar notícias completas
   Future<void> saveFavoriteNews(List<NewsModel> news);
   Future<List<NewsModel>> loadFavoriteNews();
   Future<void> addFavoriteNews(NewsModel news);

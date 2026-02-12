@@ -70,7 +70,6 @@ void main() {
     mockRepository = MockNewsRepository();
     mockFavoritesCache = MockFavoritesCacheService();
     
-    // Configura mocks padrão para os novos métodos
     when(() => mockFavoritesCache.loadFavorites())
         .thenAnswer((_) async => <int>{});
     when(() => mockFavoritesCache.loadFavoriteNews())

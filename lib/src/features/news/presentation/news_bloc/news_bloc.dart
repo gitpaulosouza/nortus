@@ -18,7 +18,6 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<NewsFavoriteFeedbackConsumed>(_onNewsFavoriteFeedbackConsumed);
     on<NewsCategorySelected>(_onNewsCategorySelected);
     
-    // Carrega favoritos assim que o BLoC é criado
     _loadFavoritesFromCache();
   }
 
@@ -31,7 +30,6 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         cachedFavoriteNews: savedFavoriteNews,
       ));
     } catch (_) {
-      // Ignora erro ao carregar favoritos do cache
     }
   }
 
@@ -282,20 +280,16 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
 
     favoritesCacheService.saveFavorites(updatedFavorites);
 
-    // Atualiza a lista de notícias favoritas no cache
     final updatedCachedFavorites = <NewsModel>[];
     
-    // Adiciona as notícias do cache que ainda são favoritas
     for (final news in state.cachedFavoriteNews) {
       if (updatedFavorites.contains(news.id) && news.id != newsId) {
         updatedCachedFavorites.add(news);
       }
     }
     
-    // Adiciona as notícias da lista atual que são favoritas
     for (final news in state.items) {
       if (updatedFavorites.contains(news.id)) {
-        // Remove duplicatas e adiciona
         updatedCachedFavorites.removeWhere((n) => n.id == news.id);
         updatedCachedFavorites.add(news);
       }
