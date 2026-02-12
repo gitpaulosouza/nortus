@@ -1,4 +1,6 @@
-class UserAddressModel {
+import 'package:equatable/equatable.dart';
+
+class UserAddressModel extends Equatable {
   final String zipCode;
   final String country;
   final String street;
@@ -18,6 +20,18 @@ class UserAddressModel {
     required this.city,
     required this.state,
   });
+
+  @override
+  List<Object?> get props => [
+    zipCode,
+    country,
+    street,
+    number,
+    complement,
+    neighborhood,
+    city,
+    state,
+  ];
 
   static UserAddressModel fromJson(Map<String, dynamic> json) {
     return UserAddressModel(

@@ -1,4 +1,6 @@
-class VideoPlaceholderModel {
+import 'package:equatable/equatable.dart';
+
+class VideoPlaceholderModel extends Equatable {
   final String imageUrl;
   final String caption;
 
@@ -6,6 +8,9 @@ class VideoPlaceholderModel {
     required this.imageUrl,
     required this.caption,
   });
+
+  @override
+  List<Object?> get props => [imageUrl, caption];
 
   static VideoPlaceholderModel fromJson(Map<String, dynamic> json) {
     return VideoPlaceholderModel(

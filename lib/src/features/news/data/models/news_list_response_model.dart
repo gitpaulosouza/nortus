@@ -1,11 +1,15 @@
+import 'package:equatable/equatable.dart';
 import 'package:nortus/src/features/news/data/models/news_model.dart';
 import 'package:nortus/src/features/news/data/models/news_pagination_model.dart';
 
-class NewsListResponseModel {
+class NewsListResponseModel extends Equatable {
   final NewsPaginationModel pagination;
   final List<NewsModel> data;
 
   const NewsListResponseModel({required this.pagination, required this.data});
+
+  @override
+  List<Object?> get props => [pagination, data];
 
   static NewsListResponseModel fromJson(Map<String, dynamic> json) {
     return NewsListResponseModel(

@@ -1,4 +1,6 @@
-class ThreeImageGridModel {
+import 'package:equatable/equatable.dart';
+
+class ThreeImageGridModel extends Equatable {
   final String topImageUrl;
   final String bottomLeftImageUrl;
   final String bottomRightImageUrl;
@@ -10,6 +12,9 @@ class ThreeImageGridModel {
     required this.bottomRightImageUrl,
     required this.caption,
   });
+
+  @override
+  List<Object?> get props => [topImageUrl, bottomLeftImageUrl, bottomRightImageUrl, caption];
 
   static ThreeImageGridModel fromJson(Map<String, dynamic> json) {
     return ThreeImageGridModel(
