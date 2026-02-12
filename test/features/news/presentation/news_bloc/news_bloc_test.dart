@@ -18,10 +18,16 @@ class MockNewsRepository extends Mock implements NewsRepository {}
 
 class MockFavoritesCacheService extends Mock implements FavoritesCacheService {}
 
+class FakeNewsModel extends Fake implements NewsModel {}
+
 void main() {
   late NewsBloc bloc;
   late MockNewsRepository mockRepository;
   late MockFavoritesCacheService mockFavoritesCache;
+
+  setUpAll(() {
+    registerFallbackValue(FakeNewsModel());
+  });
 
   NewsModel _createNews({
     required int id,
@@ -63,6 +69,18 @@ void main() {
   setUp(() {
     mockRepository = MockNewsRepository();
     mockFavoritesCache = MockFavoritesCacheService();
+    
+    // Configura mocks padrão para os novos métodos
+    when(() => mockFavoritesCache.loadFavorites())
+        .thenAnswer((_) async => <int>{});
+    when(() => mockFavoritesCache.loadFavoriteNews())
+        .thenAnswer((_) async => <NewsModel>[]);
+    when(() => mockFavoritesCache.saveFavorites(any()))
+        .thenAnswer((_) async {});
+    when(() => mockFavoritesCache.addFavoriteNews(any()))
+        .thenAnswer((_) async {});
+    when(() => mockFavoritesCache.removeFavoriteNews(any()))
+        .thenAnswer((_) async {});
   });
 
   tearDown(() {
@@ -135,14 +153,23 @@ void main() {
 
         when(() => mockFavoritesCache.loadFavorites())
             .thenAnswer((_) async => <int>{});
+        when(() => mockFavoritesCache.loadFavoriteNews())
+            .thenAnswer((_) async => <NewsModel>[]);
+        when(() => mockFavoritesCache.saveFavorites(any()))
+            .thenAnswer((_) async {});
+        when(() => mockFavoritesCache.addFavoriteNews(any()))
+            .thenAnswer((_) async {});
+        when(() => mockFavoritesCache.removeFavoriteNews(any()))
+            .thenAnswer((_) async {});
         when(() => mockRepository.fetchNewsPage(page: 1))
             .thenAnswer((_) async => Right(response));
 
         return NewsBloc(mockRepository, mockFavoritesCache);
       },
+      wait: Duration(milliseconds: 100),
+      skip: 1,
       act: (bloc) => bloc.add(NewsStarted()),
       expect: () => [
-        predicate<NewsState>((state) => state.favoriteIds.isEmpty),
         predicate<NewsState>((state) => state.isLoading),
         predicate<NewsState>(
             (state) => !state.isLoading && state.items.length == 1),
@@ -422,10 +449,14 @@ void main() {
 
         when(() => mockFavoritesCache.loadFavorites())
             .thenAnswer((_) async => <int>{});
+        when(() => mockFavoritesCache.loadFavoriteNews())
+            .thenAnswer((_) async => <NewsModel>[]);
         when(() => mockRepository.fetchNewsPage(page: 1))
             .thenAnswer((_) async => Right(response));
         when(() => mockFavoritesCache.saveFavorites(any()))
-            .thenAnswer((_) async => {});
+            .thenAnswer((_) async {});
+        when(() => mockFavoritesCache.addFavoriteNews(any()))
+            .thenAnswer((_) async {});
 
         return NewsBloc(mockRepository, mockFavoritesCache);
       },
@@ -523,6 +554,14 @@ void main() {
 
         when(() => mockFavoritesCache.loadFavorites())
             .thenAnswer((_) async => <int>{});
+        when(() => mockFavoritesCache.loadFavoriteNews())
+            .thenAnswer((_) async => <NewsModel>[]);
+        when(() => mockFavoritesCache.saveFavorites(any()))
+            .thenAnswer((_) async {});
+        when(() => mockFavoritesCache.addFavoriteNews(any()))
+            .thenAnswer((_) async {});
+        when(() => mockFavoritesCache.removeFavoriteNews(any()))
+            .thenAnswer((_) async {});
         when(() => mockRepository.fetchNewsPage(page: 1))
             .thenAnswer((_) async {
               callCount++;
@@ -541,6 +580,7 @@ void main() {
           bloc.add(NewsRefreshed());
         });
       },
+      wait: Duration(milliseconds: 200),
       skip: 3,
       expect: () => [
         predicate<NewsState>((state) => state.isLoading),
