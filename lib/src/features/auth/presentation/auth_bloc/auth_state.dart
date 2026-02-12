@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_form_mode.dart';
 
-class AuthState {
+class AuthState extends Equatable {
   final AuthFormMode mode;
   final String email;
   final String password;
@@ -107,4 +108,24 @@ class AuthState {
       return isEmailValid && isPasswordValid && isConfirmPasswordValid;
     }
   }
+
+  @override
+  List<Object?> get props => [
+        mode,
+        email,
+        password,
+        confirmPassword,
+        isEmailValid,
+        isPasswordValid,
+        isConfirmPasswordValid,
+        isPasswordVisible,
+        isConfirmPasswordVisible,
+        keepLoggedIn,
+        isSubmitting,
+        errorMessage,
+        isSuccess,
+        isRegistrationSuccess,
+        isLogoutSuccess,
+        showPasswordField,
+      ];
 }

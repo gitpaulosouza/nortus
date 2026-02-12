@@ -1,6 +1,11 @@
-abstract class AppError implements Exception {
+import 'package:equatable/equatable.dart';
+
+abstract class AppError extends Equatable implements Exception {
   final String message;
   AppError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }
 
 class NetworkError extends AppError {
