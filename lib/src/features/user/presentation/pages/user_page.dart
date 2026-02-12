@@ -248,28 +248,46 @@ class _UserPageContentState extends State<_UserPageContent> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              context
-                                  .read<AuthBloc>()
-                                  .add(AuthLogoutRequested());
-                            },
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.dangerRed,
-                              backgroundColor: AppColors.white,
-                              side: const BorderSide(
-                                color: AppColors.dangerRed,
-                                width: 1,
+                        BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            return SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: state.isSubmitting
+                                    ? null
+                                    : () {
+                                        context
+                                            .read<AuthBloc>()
+                                            .add(AuthLogoutRequested());
+                                      },
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.dangerRed,
+                                  backgroundColor: AppColors.white,
+                                  side: const BorderSide(
+                                    color: AppColors.dangerRed,
+                                    width: 1,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                                child: state.isSubmitting
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                            AppColors.dangerRed,
+                                          ),
+                                        ),
+                                      )
+                                    : const Text('Sair da conta'),
                               ),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                            ),
-                            child: const Text('Sair da conta'),
-                          ),
+                            );
+                          },
                         ),
                       ],
                     ),
