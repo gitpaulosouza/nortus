@@ -1,5 +1,3 @@
-# ![Nortus](assets/images/nortus-fav-icon.png)
-
 # Nortus
 
 Aplicativo de notícias para o desafio técnico da Loomi.
