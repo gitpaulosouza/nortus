@@ -30,9 +30,16 @@ class NewsDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<NewsDetailsBloc>()
-        ..add(NewsDetailsStarted(newsId)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => getIt<NewsDetailsBloc>()
+            ..add(NewsDetailsStarted(newsId)),
+        ),
+        BlocProvider(
+          create: (_) => getIt<NewsBloc>(),
+        ),
+      ],
       child: _NewsDetailsPageContent(newsId: newsId),
     );
   }
