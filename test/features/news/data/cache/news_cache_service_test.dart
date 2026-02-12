@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nortus/src/core/storage/prefs_keys.dart';
 import 'package:nortus/src/features/news/data/cache/news_cache_service_impl.dart';
 
 void main() {
@@ -25,7 +26,7 @@ void main() {
         await cacheService.savePage(1, json);
 
         final prefs = await SharedPreferences.getInstance();
-        final saved = prefs.getString('news_page_1');
+        final saved = prefs.getString(PrefsKeys.newsPage(1));
         expect(saved, isNotNull);
 
         final decoded = jsonDecode(saved!);
@@ -40,11 +41,11 @@ void main() {
         await cacheService.savePage(2, json2);
 
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.containsKey('news_page_1'), true);
-        expect(prefs.containsKey('news_page_2'), true);
+        expect(prefs.containsKey(PrefsKeys.newsPage(1)), true);
+        expect(prefs.containsKey(PrefsKeys.newsPage(2)), true);
 
-        final saved1 = prefs.getString('news_page_1');
-        final saved2 = prefs.getString('news_page_2');
+        final saved1 = prefs.getString(PrefsKeys.newsPage(1));
+        final saved2 = prefs.getString(PrefsKeys.newsPage(2));
         expect(saved1, isNotNull);
         expect(saved2, isNotNull);
       });
@@ -57,7 +58,7 @@ void main() {
         await cacheService.savePage(1, json2);
 
         final prefs = await SharedPreferences.getInstance();
-        final saved = prefs.getString('news_page_1');
+        final saved = prefs.getString(PrefsKeys.newsPage(1));
         final decoded = jsonDecode(saved!);
         expect(decoded['version'], 2);
       });
@@ -67,7 +68,7 @@ void main() {
 
         await cacheService.savePage(1, json);
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.containsKey('news_page_1'), true);
+        expect(prefs.containsKey(PrefsKeys.newsPage(1)), true);
       });
 
       test('deve salvar Map com dados complexos (aninhados)', () async {
@@ -92,7 +93,7 @@ void main() {
         await cacheService.savePage(1, json);
 
         final prefs = await SharedPreferences.getInstance();
-        final saved = prefs.getString('news_page_1');
+        final saved = prefs.getString(PrefsKeys.newsPage(1));
         final decoded = jsonDecode(saved!);
         expect(decoded['data'][0]['authors'][0]['name'], 'Author 1');
       });
@@ -118,7 +119,7 @@ void main() {
 
       test('deve retornar null quando chave existe mas está vazia', () async {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('news_page_1', '');
+        await prefs.setString(PrefsKeys.newsPage(1), '');
 
         final retrieved = await cacheService.getPage(1);
 
@@ -127,7 +128,7 @@ void main() {
 
       test('deve retornar null quando JSON no cache é inválido', () async {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('news_page_1', 'invalid-json-{');
+        await prefs.setString(PrefsKeys.newsPage(1), 'invalid-json-{');
 
         final retrieved = await cacheService.getPage(1);
 
@@ -136,7 +137,7 @@ void main() {
 
       test('deve retornar null quando decoded JSON não é Map', () async {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('news_page_1', jsonEncode(['array', 'not', 'map']));
+        await prefs.setString(PrefsKeys.newsPage(1), jsonEncode(['array', 'not', 'map']));
 
         final retrieved = await cacheService.getPage(1);
 
@@ -191,34 +192,34 @@ void main() {
         await cacheService.savePage(3, {'page': 3});
 
         final prefsBefore = await SharedPreferences.getInstance();
-        expect(prefsBefore.containsKey('news_page_1'), true);
-        expect(prefsBefore.containsKey('news_page_2'), true);
-        expect(prefsBefore.containsKey('news_page_3'), true);
+        expect(prefsBefore.containsKey(PrefsKeys.newsPage(1)), true);
+        expect(prefsBefore.containsKey(PrefsKeys.newsPage(2)), true);
+        expect(prefsBefore.containsKey(PrefsKeys.newsPage(3)), true);
 
         await cacheService.clear();
 
         final prefsAfter = await SharedPreferences.getInstance();
-        expect(prefsAfter.containsKey('news_page_1'), false);
-        expect(prefsAfter.containsKey('news_page_2'), false);
-        expect(prefsAfter.containsKey('news_page_3'), false);
+        expect(prefsAfter.containsKey(PrefsKeys.newsPage(1)), false);
+        expect(prefsAfter.containsKey(PrefsKeys.newsPage(2)), false);
+        expect(prefsAfter.containsKey(PrefsKeys.newsPage(3)), false);
       });
 
       test('deve permitir clear quando não há dados salvos', () async {
         await cacheService.clear();
 
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.getKeys().where((k) => k.startsWith('news_page_')).toList(), isEmpty);
+        expect(PrefsKeys.filterNewsPageKeys(prefs.getKeys()).toList(), isEmpty);
       });
 
       test('deve remover apenas chaves com prefixo news_page_', () async {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('news_page_1', jsonEncode({'data': 1}));
+        await prefs.setString(PrefsKeys.newsPage(1), jsonEncode({'data': 1}));
         await prefs.setString('other_key', 'should-remain');
         await prefs.setString('favorites', 'should-remain');
 
         await cacheService.clear();
 
-        expect(prefs.containsKey('news_page_1'), false);
+        expect(prefs.containsKey(PrefsKeys.newsPage(1)), false);
         expect(prefs.containsKey('other_key'), true);
         expect(prefs.containsKey('favorites'), true);
       });

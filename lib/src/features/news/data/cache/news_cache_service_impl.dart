@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'package:nortus/src/core/storage/prefs_keys.dart';
 import 'package:nortus/src/features/news/data/cache/news_cache_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NewsCacheServiceImpl implements NewsCacheService {
-  static const String _pagePrefix = 'news_page_';
 
   Future<SharedPreferences> get _prefs async {
     return SharedPreferences.getInstance();
@@ -12,7 +12,7 @@ class NewsCacheServiceImpl implements NewsCacheService {
   @override
   Future<void> savePage(int page, Map<String, dynamic> json) async {
     final prefs = await _prefs;
-    final key = '$_pagePrefix$page';
+    final key = PrefsKeys.newsPage(page);
     final payload = jsonEncode(json);
     await prefs.setString(key, payload);
   }
@@ -20,7 +20,7 @@ class NewsCacheServiceImpl implements NewsCacheService {
   @override
   Future<Map<String, dynamic>?> getPage(int page) async {
     final prefs = await _prefs;
-    final key = '$_pagePrefix$page';
+    final key = PrefsKeys.newsPage(page);
     final payload = prefs.getString(key);
     if (payload == null || payload.isEmpty) {
       return null;
@@ -41,7 +41,7 @@ class NewsCacheServiceImpl implements NewsCacheService {
   @override
   Future<void> clear() async {
     final prefs = await _prefs;
-    final keys = prefs.getKeys().where((key) => key.startsWith(_pagePrefix));
+    final keys = PrefsKeys.filterNewsPageKeys(prefs.getKeys());
     for (final key in keys) {
       await prefs.remove(key);
     }
