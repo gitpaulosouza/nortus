@@ -1,6 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:either_dart/either.dart';
 import 'package:nortus/src/core/error/app_error.dart';
+import 'package:nortus/src/core/http/http_client.dart';
+import 'package:nortus/src/core/http/http_exception.dart';
 import 'package:nortus/src/features/user/data/datasources/user_datasource.dart';
 import 'package:nortus/src/features/user/data/models/user_list_response_model.dart';
 import 'package:nortus/src/features/user/data/models/user_model.dart';
@@ -8,14 +9,14 @@ import 'package:nortus/src/features/user/data/models/user_response_model.dart';
 import 'package:nortus/src/features/user/mock/user_mock_factory.dart';
 
 class UserDatasourceImpl implements UserDatasource {
-  final Dio dio;
+  final HttpClient httpClient;
 
-  UserDatasourceImpl(this.dio);
+  UserDatasourceImpl(this.httpClient);
 
   @override
   Future<Either<AppError, UserModel>> getUser() async {
     try {
-      final response = await dio.get('/user');
+      final response = await httpClient.get('/user');
 
       if (response.statusCode != 200) {
         if (_shouldUseMock(response.data)) {
@@ -35,8 +36,8 @@ class UserDatasourceImpl implements UserDatasource {
       }
 
       return Left(UnknownError('Resposta inválida do servidor.'));
-    } on DioException catch (error) {
-      if (_shouldUseMock(error.response?.data ?? error.message)) {
+    } on HttpException catch (error) {
+      if (_shouldUseMock(error.data ?? error.message)) {
         return Right(UserMockFactory.createMockUser());
       }
       return Left(NetworkError('Erro de rede. Tente novamente.'));
@@ -50,7 +51,7 @@ class UserDatasourceImpl implements UserDatasource {
   @override
   Future<Either<AppError, UserModel>> updateUser(UserModel model) async {
     try {
-      final response = await dio.patch('/user', data: model.toJson());
+      final response = await httpClient.put('/user', data: model.toJson());
 
       if (response.statusCode != 200 && response.statusCode != 204) {
         if (_shouldUseMock(response.data)) {
@@ -75,8 +76,8 @@ class UserDatasourceImpl implements UserDatasource {
       );
 
       return Right(userResponse.data);
-    } on DioException catch (error) {
-      if (_shouldUseMock(error.response?.data ?? error.message)) {
+    } on HttpException catch (error) {
+      if (_shouldUseMock(error.data ?? error.message)) {
         return Right(UserMockFactory.createMockUser());
       }
       return Left(NetworkError('Erro de rede. Tente novamente.'));
