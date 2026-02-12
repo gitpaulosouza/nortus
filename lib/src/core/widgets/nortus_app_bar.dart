@@ -24,7 +24,7 @@ class NortusAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           children: [
             Image.asset(
-              'assets/images/nortus_logo.png',
+              'assets/images/nortus-logo.png',
               height: 24,
               fit: BoxFit.contain,
             ),

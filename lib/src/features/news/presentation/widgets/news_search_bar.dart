@@ -96,7 +96,7 @@ class _NewsSearchBarState extends State<NewsSearchBar> {
             ),
             const SizedBox(width: 8),
             SvgPicture.asset(
-              'assets/images/nortus_wordmark.svg',
+              'assets/images/nortus-wordmark.svg',
               height: 24,
               colorFilter: const ColorFilter.mode(
                 AppColors.textPrimary,
