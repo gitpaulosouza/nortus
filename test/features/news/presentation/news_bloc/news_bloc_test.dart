@@ -561,7 +561,7 @@ void main() {
             .thenAnswer((_) async {});
         when(() => mockFavoritesCache.removeFavoriteNews(any()))
             .thenAnswer((_) async {});
-        when(() => mockRepository.fetchNewsPage(page: 1))
+        when(() => mockRepository.fetchNewsPage(page: 1, forceRefresh: any(named: 'forceRefresh')))
             .thenAnswer((_) async {
               callCount++;
               if (callCount == 1) {

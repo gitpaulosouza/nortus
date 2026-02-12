@@ -92,7 +92,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     NewsRefreshed event,
     Emitter<NewsState> emit,
   ) async {
-    await _loadFirstPage(emit);
+    await _loadFirstPage(emit, forceRefresh: true);
   }
 
   void _onNewsSearchQueryChanged(
@@ -111,7 +111,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     );
   }
 
-  Future<void> _loadFirstPage(Emitter<NewsState> emit) async {
+  Future<void> _loadFirstPage(Emitter<NewsState> emit, {bool forceRefresh = false}) async {
     emit(
       state.copyWith(
         items: [],
@@ -125,7 +125,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       ),
     );
 
-    final result = await repository.fetchNewsPage(page: 1);
+    final result = await repository.fetchNewsPage(page: 1, forceRefresh: forceRefresh);
 
     result.fold(
       (error) {
