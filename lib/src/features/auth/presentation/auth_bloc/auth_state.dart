@@ -1,4 +1,4 @@
-import 'package:nortus/src/features/auth/presentation/bloc/auth_form_mode.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_form_mode.dart';
 
 class AuthState {
   final AuthFormMode mode;

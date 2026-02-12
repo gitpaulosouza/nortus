@@ -2,9 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nortus/src/core/utils/validators.dart';
 import 'package:nortus/src/features/auth/data/models/auth_model.dart';
 import 'package:nortus/src/features/auth/data/repositories/auth_repository.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_event.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_form_mode.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_state.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_event.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_form_mode.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository repository;

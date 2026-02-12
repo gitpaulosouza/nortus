@@ -7,12 +7,12 @@ import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/utils/snackbar_helper.dart';
 import 'package:nortus/src/core/widgets/nortus_nav_item.dart';
 import 'package:nortus/src/core/widgets/nortus_scaffold.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_event.dart';
-import 'package:nortus/src/features/auth/presentation/bloc/auth_state.dart';
-import 'package:nortus/src/features/user/presentation/bloc/user_bloc.dart';
-import 'package:nortus/src/features/user/presentation/bloc/user_event.dart';
-import 'package:nortus/src/features/user/presentation/bloc/user_state.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_bloc.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_event.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_state.dart';
+import 'package:nortus/src/features/user/presentation/user_bloc/user_bloc.dart';
+import 'package:nortus/src/features/user/presentation/user_bloc/user_event.dart';
+import 'package:nortus/src/features/user/presentation/user_bloc/user_state.dart';
 import 'package:nortus/src/features/user/presentation/widgets/favorite_news_section.dart';
 import 'package:nortus/src/features/user/presentation/widgets/profile_search_bar.dart';
 

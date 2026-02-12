@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nortus/src/features/news/data/models/news_details_model.dart';
 import 'package:nortus/src/features/news/data/repositories/news_details_repository.dart';
-import 'package:nortus/src/features/news/presentation/bloc_details/news_details_event.dart';
-import 'package:nortus/src/features/news/presentation/bloc_details/news_details_state.dart';
+import 'package:nortus/src/features/news/presentation/news_details_bloc/news_details_event.dart';
+import 'package:nortus/src/features/news/presentation/news_details_bloc/news_details_state.dart';
 
 class NewsDetailsBloc extends Bloc<NewsDetailsEvent, NewsDetailsState> {
   final NewsDetailsRepository repository;
