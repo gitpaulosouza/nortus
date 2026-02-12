@@ -5,7 +5,7 @@ class UserResponseModel {
 
   const UserResponseModel({required this.data});
 
-  factory UserResponseModel.fromJson(Map<String, dynamic> json) {
+  static UserResponseModel fromJson(Map<String, dynamic> json) {
     final dataJson = json['data'] as Map<String, dynamic>? ?? {};
     return UserResponseModel(data: UserModel.fromJson(dataJson));
   }

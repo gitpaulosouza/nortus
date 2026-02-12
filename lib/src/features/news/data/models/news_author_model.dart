@@ -11,7 +11,7 @@ class NewsAuthorModel {
     required this.description,
   });
 
-  factory NewsAuthorModel.fromJson(Map<String, dynamic> json) {
+  static NewsAuthorModel fromJson(Map<String, dynamic> json) {
     return NewsAuthorModel(
       name: json['name'] as String? ?? '',
       image: NewsImageModel.fromJson(

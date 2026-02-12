@@ -11,7 +11,7 @@ class NewsPaginationModel {
     required this.totalItems,
   });
 
-  factory NewsPaginationModel.fromJson(Map<String, dynamic> json) {
+  static NewsPaginationModel fromJson(Map<String, dynamic> json) {
     return NewsPaginationModel(
       page: json['page'] as int? ?? 1,
       pageSize: json['pageSize'] as int? ?? 10,

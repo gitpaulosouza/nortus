@@ -1,4 +1,22 @@
-import 'package:nortus/src/features/user/data/models/user_address_model.dart';
+import 'package:nortus/src/features/user/data/models/adress_user_model.dart';
+
+DateTime _parseDate(dynamic value) {
+  if (value == null) return DateTime.now();
+  if (value is String) {
+    try {
+      return DateTime.parse(value);
+    } catch (_) {
+      return DateTime.now();
+    }
+  }
+  return DateTime.now();
+}
+
+int _parseId(dynamic value) {
+  if (value is int) return value;
+  if (value is String) return int.tryParse(value) ?? 0;
+  return 0;
+}
 
 class UserModel {
   final int id;
@@ -7,7 +25,7 @@ class UserModel {
   final String language;
   final String dateFormat;
   final String timezone;
-  final UserAddressModel address;
+  final AdressUserModel address;
   final DateTime updatedAt;
 
   const UserModel({
@@ -21,33 +39,18 @@ class UserModel {
     required this.updatedAt,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  static UserModel fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] as int? ?? 0,
+      id: _parseId(json['id']),
       name: json['name'] as String? ?? '',
       email: json['email'] as String? ?? '',
       language: json['language'] as String? ?? '',
       dateFormat: json['dateFormat'] as String? ?? '',
       timezone: json['timezone'] as String? ?? '',
-      address:
-          json['address'] != null
-              ? UserAddressModel.fromJson(
-                json['address'] as Map<String, dynamic>,
-              )
-              : const UserAddressModel(
-                zipCode: '',
-                country: '',
-                street: '',
-                number: '',
-                complement: '',
-                neighborhood: '',
-                city: '',
-                state: '',
-              ),
-      updatedAt:
-          json['updatedAt'] != null
-              ? DateTime.parse(json['updatedAt'] as String)
-              : DateTime.now(),
+      address: AdressUserModel.fromJson(
+        json['address'] as Map<String, dynamic>? ?? {},
+      ),
+      updatedAt: _parseDate(json['updatedAt']),
     );
   }
 

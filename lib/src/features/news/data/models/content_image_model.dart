@@ -7,7 +7,7 @@ class ContentImageModel {
     required this.caption,
   });
 
-  factory ContentImageModel.fromJson(Map<String, dynamic> json) {
+  static ContentImageModel fromJson(Map<String, dynamic> json) {
     return ContentImageModel(
       imageUrl: json['imageUrl'] as String? ?? '',
       caption: json['caption'] as String? ?? '',

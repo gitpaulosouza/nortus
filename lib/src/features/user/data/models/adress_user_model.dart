@@ -1,4 +1,4 @@
-class UserAddressModel {
+class AdressUserModel {
   final String zipCode;
   final String country;
   final String street;
@@ -8,7 +8,7 @@ class UserAddressModel {
   final String city;
   final String state;
 
-  const UserAddressModel({
+  const AdressUserModel({
     required this.zipCode,
     required this.country,
     required this.street,
@@ -19,8 +19,8 @@ class UserAddressModel {
     required this.state,
   });
 
-  static UserAddressModel fromJson(Map<String, dynamic> json) {
-    return UserAddressModel(
+  static AdressUserModel fromJson(Map<String, dynamic> json) {
+    return AdressUserModel(
       zipCode: json['zipCode'] as String? ?? '',
       country: json['country'] as String? ?? '',
       street: json['street'] as String? ?? '',
