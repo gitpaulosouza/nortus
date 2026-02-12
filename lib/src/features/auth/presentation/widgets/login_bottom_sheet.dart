@@ -42,7 +42,7 @@ class _LoginBottomSheetContent extends StatelessWidget {
           SnackbarHelper.showError(
             context,
             'Erro ao autenticar',
-            subtitle: state.errorMessage!,
+            subtitle: 'Não foi possível realizar a autenticação.',
           );
         } else if (state.isRegistrationSuccess) {
           SnackbarHelper.showSuccess(
@@ -53,7 +53,7 @@ class _LoginBottomSheetContent extends StatelessWidget {
 
           Future.delayed(const Duration(milliseconds: 500), () {
             if (context.mounted) {
-              context.read<AuthBloc>().add(AuthModeChanged(AuthFormMode.login));
+              context.read<AuthBloc>().add(AuthFormCleared());
             }
           });
         } else if (state.isSuccess) {
