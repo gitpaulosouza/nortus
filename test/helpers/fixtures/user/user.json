@@ -1,0 +1,19 @@
+{
+  "id": 1,
+  "name": "John Doe",
+  "email": "john@example.com",
+  "language": "pt-BR",
+  "dateFormat": "dd/MM/yyyy",
+  "timezone": "America/Sao_Paulo",
+  "address": {
+    "zipCode": "12345-678",
+    "country": "Brazil",
+    "street": "Test Street",
+    "number": "123",
+    "complement": "Apt 101",
+    "neighborhood": "Center",
+    "city": "São Paulo",
+    "state": "SP"
+  },
+  "updatedAt": "2024-02-12T10:00:00Z"
+}
