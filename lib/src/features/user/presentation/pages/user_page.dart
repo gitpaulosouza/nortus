@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/utils/snackbar_helper.dart';
 import 'package:nortus/src/core/widgets/nortus_nav_item.dart';
@@ -10,20 +10,43 @@ import 'package:nortus/src/core/widgets/nortus_scaffold.dart';
 import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_bloc.dart';
 import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_event.dart';
 import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_state.dart';
+import 'package:nortus/src/features/news/presentation/news_bloc/news_bloc.dart';
 import 'package:nortus/src/features/user/presentation/user_bloc/user_bloc.dart';
 import 'package:nortus/src/features/user/presentation/user_bloc/user_event.dart';
 import 'package:nortus/src/features/user/presentation/user_bloc/user_state.dart';
 import 'package:nortus/src/features/user/presentation/widgets/favorite_news_section.dart';
 import 'package:nortus/src/features/user/presentation/widgets/profile_search_bar.dart';
 
-class UserPage extends StatefulWidget {
+class UserPage extends StatelessWidget {
   const UserPage({super.key});
 
   @override
-  State<UserPage> createState() => _UserPageState();
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => getIt<UserBloc>()..add(const UserStarted()),
+        ),
+        BlocProvider(
+          create: (_) => getIt<AuthBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => getIt<NewsBloc>(),
+        ),
+      ],
+      child: const _UserPageContent(),
+    );
+  }
 }
 
-class _UserPageState extends State<UserPage> {
+class _UserPageContent extends StatefulWidget {
+  const _UserPageContent();
+
+  @override
+  State<_UserPageContent> createState() => _UserPageContentState();
+}
+
+class _UserPageContentState extends State<_UserPageContent> {
   String _searchQuery = '';
 
   void _onSearchChanged(String query) {
@@ -225,28 +248,46 @@ class _UserPageState extends State<UserPage> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              context
-                                  .read<AuthBloc>()
-                                  .add(AuthLogoutRequested());
-                            },
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.dangerRed,
-                              backgroundColor: AppColors.white,
-                              side: const BorderSide(
-                                color: AppColors.dangerRed,
-                                width: 1,
+                        BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            return SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: state.isSubmitting
+                                    ? null
+                                    : () {
+                                        context
+                                            .read<AuthBloc>()
+                                            .add(AuthLogoutRequested());
+                                      },
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.dangerRed,
+                                  backgroundColor: AppColors.white,
+                                  side: const BorderSide(
+                                    color: AppColors.dangerRed,
+                                    width: 1,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                                child: state.isSubmitting
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                            AppColors.dangerRed,
+                                          ),
+                                        ),
+                                      )
+                                    : const Text('Sair da conta'),
                               ),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                            ),
-                            child: const Text('Sair da conta'),
-                          ),
+                            );
+                          },
                         ),
                       ],
                     ),

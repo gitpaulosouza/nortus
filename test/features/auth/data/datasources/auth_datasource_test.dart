@@ -1,19 +1,21 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nortus/src/core/error/app_error.dart';
-import 'package:nortus/src/features/auth/data/datasources/auth_datasource.dart';
+import 'package:nortus/src/core/http/http_client.dart';
+import 'package:nortus/src/core/http/http_exception.dart';
+import 'package:nortus/src/core/http/http_response.dart';
+import 'package:nortus/src/features/auth/data/datasources/auth_datasource_impl.dart';
 import 'package:nortus/src/features/auth/data/models/auth_model.dart';
 
-class MockDio extends Mock implements Dio {}
+class MockHttpClient extends Mock implements HttpClient {}
 
 void main() {
-  late MockDio mockDio;
+  late MockHttpClient mockHttpClient;
   late AuthDatasourceImpl datasource;
 
   setUp(() {
-    mockDio = MockDio();
-    datasource = AuthDatasourceImpl(mockDio);
+    mockHttpClient = MockHttpClient();
+    datasource = AuthDatasourceImpl(mockHttpClient);
   });
 
   setUpAll(() {
@@ -33,11 +35,10 @@ void main() {
 
     group('login', () {
       test('deve retornar Right quando login bem-sucedido', () async {
-        when(() => mockDio.post('/auth', data: any(named: 'data')))
-            .thenAnswer((_) async => Response(
+        when(() => mockHttpClient.post('/auth', data: any(named: 'data')))
+            .thenAnswer((_) async => const HttpResponse(
                   data: <String, dynamic>{'token': 'fake-token'},
                   statusCode: 200,
-                  requestOptions: RequestOptions(path: '/auth'),
                 ));
 
         final result = await datasource.login(validCredentials);
@@ -45,15 +46,13 @@ void main() {
         expect(result.isRight, true);
       });
 
-      test('deve retornar Right com credenciais válidas quando quota exceeded', () async {
-        when(() => mockDio.post('/auth', data: any(named: 'data')))
-            .thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/auth'),
-          response: Response(
-            data: 'Monthly request quota has been exceeded',
-            statusCode: 429,
-            requestOptions: RequestOptions(path: '/auth'),
-          ),
+      test('deve retornar Right com credenciais válidas quando quota exceeded',
+          () async {
+        when(() => mockHttpClient.post('/auth', data: any(named: 'data')))
+            .thenThrow(const HttpException(
+          message: 'Monthly request quota has been exceeded',
+          statusCode: 429,
+          data: 'Monthly request quota has been exceeded',
         ));
 
         final result = await datasource.login(validCredentials);
@@ -61,15 +60,14 @@ void main() {
         expect(result.isRight, true);
       });
 
-      test('deve retornar ValidationError com credenciais inválidas quando quota exceeded', () async {
-        when(() => mockDio.post('/auth', data: any(named: 'data')))
-            .thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/auth'),
-          response: Response(
-            data: 'Monthly request quota has been exceeded',
-            statusCode: 429,
-            requestOptions: RequestOptions(path: '/auth'),
-          ),
+      test(
+          'deve retornar ValidationError com credenciais inválidas quando quota exceeded',
+          () async {
+        when(() => mockHttpClient.post('/auth', data: any(named: 'data')))
+            .thenThrow(const HttpException(
+          message: 'Monthly request quota has been exceeded',
+          statusCode: 429,
+          data: 'Monthly request quota has been exceeded',
         ));
 
         final result = await datasource.login(invalidCredentials);
@@ -82,14 +80,11 @@ void main() {
       });
 
       test('deve retornar ValidationError quando status 401', () async {
-        when(() => mockDio.post('/auth', data: any(named: 'data')))
-            .thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/auth'),
-          response: Response(
-            data: 'Unauthorized',
-            statusCode: 401,
-            requestOptions: RequestOptions(path: '/auth'),
-          ),
+        when(() => mockHttpClient.post('/auth', data: any(named: 'data')))
+            .thenThrow(const HttpException(
+          message: 'Unauthorized',
+          statusCode: 401,
+          data: 'Unauthorized',
         ));
 
         final result = await datasource.login(invalidCredentials);
@@ -105,7 +100,7 @@ void main() {
       });
 
       test('deve retornar UnknownError quando exceção desconhecida', () async {
-        when(() => mockDio.post('/auth', data: any(named: 'data')))
+        when(() => mockHttpClient.post('/auth', data: any(named: 'data')))
             .thenThrow(Exception('Unknown'));
 
         final result = await datasource.login(validCredentials);
@@ -114,7 +109,10 @@ void main() {
         result.fold(
           (error) {
             expect(error, isA<UnknownError>());
-            expect(error.message, 'Ops! Aconteceu alguma coisa, tente novamente.');
+            expect(
+              error.message,
+              'Ops! Aconteceu alguma coisa, tente novamente.',
+            );
           },
           (_) => fail('Should not return success'),
         );
@@ -124,6 +122,12 @@ void main() {
     group('register', () {
       test('deve retornar Right quando dados válidos', () async {
         const model = AuthModel(login: 'newuser', password: 'password123');
+
+        when(() => mockHttpClient.post('/users', data: any(named: 'data')))
+            .thenAnswer((_) async => const HttpResponse(
+                  data: {},
+                  statusCode: 201,
+                ));
 
         final result = await datasource.register(model);
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/widgets/nortus_nav_item.dart';
 import 'package:nortus/src/core/widgets/nortus_scaffold.dart';
@@ -22,21 +23,38 @@ import 'package:nortus/src/features/news/presentation/widgets/video_placeholder_
 import 'package:nortus/src/features/news/data/models/news_model.dart';
 import 'package:nortus/src/features/news/data/models/news_image_model.dart';
 
-class NewsDetailsPage extends StatefulWidget {
+class NewsDetailsPage extends StatelessWidget {
   final int newsId;
 
   const NewsDetailsPage({super.key, required this.newsId});
 
   @override
-  State<NewsDetailsPage> createState() => _NewsDetailsPageState();
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => getIt<NewsDetailsBloc>()
+            ..add(NewsDetailsStarted(newsId)),
+        ),
+        BlocProvider(
+          create: (_) => getIt<NewsBloc>(),
+        ),
+      ],
+      child: _NewsDetailsPageContent(newsId: newsId),
+    );
+  }
 }
 
-class _NewsDetailsPageState extends State<NewsDetailsPage> {
+class _NewsDetailsPageContent extends StatefulWidget {
+  final int newsId;
+
+  const _NewsDetailsPageContent({required this.newsId});
+
   @override
-  void initState() {
-    super.initState();
-    context.read<NewsDetailsBloc>().add(NewsDetailsStarted(widget.newsId));
-  }
+  State<_NewsDetailsPageContent> createState() => _NewsDetailsPageContentState();
+}
+
+class _NewsDetailsPageContentState extends State<_NewsDetailsPageContent> {
 
   @override
   Widget build(BuildContext context) {

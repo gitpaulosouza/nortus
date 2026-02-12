@@ -2,30 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/utils/snackbar_helper.dart';
 import 'package:nortus/src/core/widgets/nortus_nav_item.dart';
 import 'package:nortus/src/core/widgets/nortus_scaffold.dart';
+import 'package:nortus/src/features/auth/presentation/auth_bloc/auth_bloc.dart';
 import 'package:nortus/src/features/user/presentation/user_bloc/user_bloc.dart';
 import 'package:nortus/src/features/user/presentation/user_bloc/user_event.dart';
 import 'package:nortus/src/features/user/presentation/user_bloc/user_state.dart';
 
-class UserSettingsPage extends StatefulWidget {
+class UserSettingsPage extends StatelessWidget {
   const UserSettingsPage({super.key});
 
   @override
-  State<UserSettingsPage> createState() => _UserSettingsPageState();
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => getIt<UserBloc>()..add(const UserStarted()),
+        ),
+        BlocProvider(
+          create: (_) => getIt<AuthBloc>(),
+        ),
+      ],
+      child: const _UserSettingsPageContent(),
+    );
+  }
 }
 
-class _UserSettingsPageState extends State<UserSettingsPage> {
+class _UserSettingsPageContent extends StatefulWidget {
+  const _UserSettingsPageContent();
+
   @override
-  void initState() {
-    super.initState();
-    final state = context.read<UserBloc>().state;
-    if (state.user == null) {
-      context.read<UserBloc>().add(const UserStarted());
-    }
-  }
+  State<_UserSettingsPageContent> createState() => _UserSettingsPageContentState();
+}
+
+class _UserSettingsPageContentState extends State<_UserSettingsPageContent> {
 
   @override
   Widget build(BuildContext context) {

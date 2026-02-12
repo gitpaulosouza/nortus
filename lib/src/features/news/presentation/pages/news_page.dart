@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nortus/src/core/di/app_injector.dart';
 import 'package:nortus/src/core/utils/snackbar_helper.dart';
 import 'package:nortus/src/core/themes/app_colors.dart';
 import 'package:nortus/src/core/widgets/nortus_nav_item.dart';
@@ -16,14 +17,26 @@ import 'package:nortus/src/features/news/presentation/widgets/news_search_bar.da
 import 'package:nortus/src/features/news/presentation/widgets/search_news_list_item.dart';
 import 'package:nortus/src/features/news/presentation/widgets/news_category_menu.dart';
 
-class NewsPage extends StatefulWidget {
+class NewsPage extends StatelessWidget {
   const NewsPage({super.key});
 
   @override
-  State<NewsPage> createState() => _NewsPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<NewsBloc>()..add(const NewsStarted()),
+      child: const _NewsPageContent(),
+    );
+  }
 }
 
-class _NewsPageState extends State<NewsPage> {
+class _NewsPageContent extends StatefulWidget {
+  const _NewsPageContent();
+
+  @override
+  State<_NewsPageContent> createState() => _NewsPageContentState();
+}
+
+class _NewsPageContentState extends State<_NewsPageContent> {
   late final ScrollController _scrollController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -32,7 +45,6 @@ class _NewsPageState extends State<NewsPage> {
     super.initState();
     _scrollController = ScrollController();
 
-    context.read<NewsBloc>().add(const NewsStarted());
   }
 
   @override

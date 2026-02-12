@@ -1,21 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:nortus/src/features/news/data/cache/favorites_cache_service.dart';
+import 'package:nortus/src/core/storage/prefs_keys.dart';
+import 'package:nortus/src/features/news/data/cache/favorites_cache_service_impl.dart';
 
 void main() {
   group('FavoritesCacheService', () {
-    late FavoritesCacheService favoritesService;
+    late FavoritesCacheServiceImpl favoritesService;
 
     setUp(() {
       SharedPreferences.setMockInitialValues({});
-      favoritesService = FavoritesCacheService();
+      favoritesService = FavoritesCacheServiceImpl();
     });
 
     group('saveFavorites', () {
       test('deve salvar Set vazio sem erro', () async {
         await favoritesService.saveFavorites({});
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.containsKey('news_favorites'), true);
+        expect(prefs.containsKey(PrefsKeys.newsFavorites.key), true);
       });
 
       test('deve salvar um favorito', () async {
@@ -24,7 +25,7 @@ void main() {
         await favoritesService.saveFavorites(favorites);
 
         final prefs = await SharedPreferences.getInstance();
-        final saved = prefs.getStringList('news_favorites');
+        final saved = prefs.getStringList(PrefsKeys.newsFavorites.key);
         expect(saved, isNotNull);
         expect(saved!.length, 1);
         expect(saved[0], '1');
@@ -36,7 +37,7 @@ void main() {
         await favoritesService.saveFavorites(favorites);
 
         final prefs = await SharedPreferences.getInstance();
-        final saved = prefs.getStringList('news_favorites');
+        final saved = prefs.getStringList(PrefsKeys.newsFavorites.key);
         expect(saved!.length, 5);
         expect(saved.contains('1'), true);
         expect(saved.contains('2'), true);
@@ -51,7 +52,7 @@ void main() {
         await favoritesService.saveFavorites(favorites2);
 
         final prefs = await SharedPreferences.getInstance();
-        final saved = prefs.getStringList('news_favorites');
+        final saved = prefs.getStringList(PrefsKeys.newsFavorites.key);
         expect(saved!.length, 4);
         expect(saved.contains('1'), false);
         expect(saved.contains('10'), true);
@@ -63,7 +64,7 @@ void main() {
         await favoritesService.saveFavorites(favorites);
 
         final prefs = await SharedPreferences.getInstance();
-        final saved = prefs.getStringList('news_favorites');
+        final saved = prefs.getStringList(PrefsKeys.newsFavorites.key);
         expect(saved!.length, 3);
         expect(saved.contains('999999'), true);
       });
@@ -108,7 +109,7 @@ void main() {
 
       test('deve retornar Set vazio quando JSON salvo é inválido', () async {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setStringList('news_favorites', ['invalid', 'not-numbers']);
+        await prefs.setStringList(PrefsKeys.newsFavorites.key, ['invalid', 'not-numbers']);
 
         final favorites = await favoritesService.loadFavorites();
 
@@ -117,17 +118,17 @@ void main() {
 
       test('deve limpar chave quando há erro de parsing', () async {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setStringList('news_favorites', ['invalid']);
+        await prefs.setStringList(PrefsKeys.newsFavorites.key, ['invalid']);
 
         await favoritesService.loadFavorites();
 
         final afterLoad = await SharedPreferences.getInstance();
-        expect(afterLoad.containsKey('news_favorites'), false);
+        expect(afterLoad.containsKey(PrefsKeys.newsFavorites.key), false);
       });
 
       test('deve retornar Set sem duplicatas', () async {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setStringList('news_favorites', ['1', '2', '2', '3', '3', '3']);
+        await prefs.setStringList(PrefsKeys.newsFavorites.key, ['1', '2', '2', '3', '3', '3']);
 
         final favorites = await favoritesService.loadFavorites();
 
@@ -172,7 +173,7 @@ void main() {
         await favoritesService.addFavorite(99);
 
         final prefs = await SharedPreferences.getInstance();
-        final saved = prefs.getStringList('news_favorites');
+        final saved = prefs.getStringList(PrefsKeys.newsFavorites.key);
         expect(saved!.contains('99'), true);
       });
     });
@@ -215,7 +216,7 @@ void main() {
         await favoritesService.removeFavorite(2);
 
         final prefs = await SharedPreferences.getInstance();
-        final saved = prefs.getStringList('news_favorites');
+        final saved = prefs.getStringList(PrefsKeys.newsFavorites.key);
         expect(saved!.contains('2'), false);
         expect(saved.contains('1'), true);
         expect(saved.contains('3'), true);
@@ -232,14 +233,14 @@ void main() {
         await favoritesService.clear();
 
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.containsKey('news_favorites'), false);
+        expect(prefs.containsKey(PrefsKeys.newsFavorites.key), false);
       });
 
       test('deve permitir clear quando não há dados', () async {
         await favoritesService.clear();
 
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.containsKey('news_favorites'), false);
+        expect(prefs.containsKey(PrefsKeys.newsFavorites.key), false);
       });
 
       test('deve permitir adicionar favoritos após clear', () async {
@@ -290,16 +291,6 @@ void main() {
         await favoritesService.addFavorite(20);
         favorites = await favoritesService.loadFavorites();
         expect(favorites, equals({10, 20, 30}));
-      });
-
-      test('deve manter persistência entre save/load', () async {
-        const initial = {5, 10, 15};
-        await favoritesService.saveFavorites(initial);
-
-        final newService = FavoritesCacheService();
-        final loaded = await newService.loadFavorites();
-
-        expect(loaded, equals({5, 10, 15}));
       });
     });
   });

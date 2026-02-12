@@ -1,19 +1,21 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nortus/src/core/error/app_error.dart';
-import 'package:nortus/src/features/news/data/datasources/news_details_datasource.dart';
+import 'package:nortus/src/core/http/http_client.dart';
+import 'package:nortus/src/core/http/http_exception.dart';
+import 'package:nortus/src/core/http/http_response.dart';
+import 'package:nortus/src/features/news/data/datasources/news_details_datasource_impl.dart';
 import 'package:nortus/src/features/news/data/models/news_details_model.dart';
 
-class MockDio extends Mock implements Dio {}
+class MockHttpClient extends Mock implements HttpClient {}
 
 void main() {
-  late MockDio mockDio;
+  late MockHttpClient mockHttpClient;
   late NewsDetailsDatasourceImpl datasource;
 
   setUp(() {
-    mockDio = MockDio();
-    datasource = NewsDetailsDatasourceImpl(mockDio);
+    mockHttpClient = MockHttpClient();
+    datasource = NewsDetailsDatasourceImpl(mockHttpClient);
   });
 
   group('NewsDetailsDataSource', () {
@@ -33,10 +35,9 @@ void main() {
           'relatedNews': [],
         };
 
-        when(() => mockDio.get('/news/1')).thenAnswer((_) async => Response(
+        when(() => mockHttpClient.get('/news/1')).thenAnswer((_) async => HttpResponse(
               data: responseData,
               statusCode: 200,
-              requestOptions: RequestOptions(path: '/news/1'),
             ));
 
         final result = await datasource.fetchNewsDetails(1);
@@ -66,13 +67,10 @@ void main() {
       });
 
       test('deve retornar mock quando quota exceeded', () async {
-        when(() => mockDio.get('/news/1')).thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/news/1'),
-          response: Response(
-            data: 'quota exceeded',
-            statusCode: 429,
-            requestOptions: RequestOptions(path: '/news/1'),
-          ),
+        when(() => mockHttpClient.get('/news/1')).thenThrow(const HttpException(
+          message: 'quota exceeded',
+          statusCode: 429,
+          data: 'quota exceeded',
         ));
 
         final result = await datasource.fetchNewsDetails(1);
@@ -88,10 +86,9 @@ void main() {
       });
 
       test('deve retornar NetworkError quando status code não é 200 e não usa mock', () async {
-        when(() => mockDio.get('/news/1')).thenAnswer((_) async => Response(
+        when(() => mockHttpClient.get('/news/1')).thenAnswer((_) async => const HttpResponse(
               data: null,
               statusCode: 500,
-              requestOptions: RequestOptions(path: '/news/1'),
             ));
 
         final result = await datasource.fetchNewsDetails(1);
@@ -107,10 +104,9 @@ void main() {
       });
 
       test('deve retornar UnknownError quando resposta inválida e não usa mock', () async {
-        when(() => mockDio.get('/news/1')).thenAnswer((_) async => Response(
+        when(() => mockHttpClient.get('/news/1')).thenAnswer((_) async => const HttpResponse(
               data: 'invalid data',
               statusCode: 200,
-              requestOptions: RequestOptions(path: '/news/1'),
             ));
 
         final result = await datasource.fetchNewsDetails(1);
@@ -126,8 +122,7 @@ void main() {
       });
 
       test('deve usar mock quando wiremock no erro', () async {
-        when(() => mockDio.get('/news/1')).thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/news/1'),
+        when(() => mockHttpClient.get('/news/1')).thenThrow(const HttpException(
           message: 'wiremock error',
         ));
 
@@ -141,7 +136,7 @@ void main() {
       });
 
       test('deve retornar UnknownError quando exceção desconhecida', () async {
-        when(() => mockDio.get('/news/1')).thenThrow(Exception('Unknown'));
+        when(() => mockHttpClient.get('/news/1')).thenThrow(Exception('Unknown'));
 
         final result = await datasource.fetchNewsDetails(1);
 
