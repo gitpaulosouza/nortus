@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'package:nortus/src/features/news/data/cache/favorites_cache_service.dart';
+import 'package:nortus/src/features/news/data/models/news_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoritesCacheServiceImpl implements FavoritesCacheService {
   static const String _favoritesKey = 'news_favorites';
+  static const String _favoriteNewsKey = 'news_favorites_data';
 
   Future<SharedPreferences> get _prefs async {
     return SharedPreferences.getInstance();
@@ -35,6 +38,7 @@ class FavoritesCacheServiceImpl implements FavoritesCacheService {
   Future<void> clear() async {
     final prefs = await _prefs;
     await prefs.remove(_favoritesKey);
+    await prefs.remove(_favoriteNewsKey);
   }
 
   @override
@@ -49,5 +53,45 @@ class FavoritesCacheServiceImpl implements FavoritesCacheService {
     final favorites = await loadFavorites();
     favorites.remove(newsId);
     await saveFavorites(favorites);
+  }
+
+  @override
+  Future<void> saveFavoriteNews(List<NewsModel> news) async {
+    try {
+      final prefs = await _prefs;
+      final newsJsonList = news.map((n) => json.encode(n.toJson())).toList();
+      await prefs.setStringList(_favoriteNewsKey, newsJsonList);
+    } catch (_) {
+      // Ignora erro ao salvar
+    }
+  }
+
+  @override
+  Future<List<NewsModel>> loadFavoriteNews() async {
+    try {
+      final prefs = await _prefs;
+      final newsJsonList = prefs.getStringList(_favoriteNewsKey) ?? [];
+      return newsJsonList
+          .map((jsonStr) => NewsModel.fromJson(json.decode(jsonStr)))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<void> addFavoriteNews(NewsModel news) async {
+    final favoriteNews = await loadFavoriteNews();
+    // Remove se já existir para evitar duplicatas
+    favoriteNews.removeWhere((n) => n.id == news.id);
+    favoriteNews.add(news);
+    await saveFavoriteNews(favoriteNews);
+  }
+
+  @override
+  Future<void> removeFavoriteNews(int newsId) async {
+    final favoriteNews = await loadFavoriteNews();
+    favoriteNews.removeWhere((n) => n.id == newsId);
+    await saveFavoriteNews(favoriteNews);
   }
 }
