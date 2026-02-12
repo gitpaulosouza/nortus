@@ -42,7 +42,6 @@ void main() {
         expect(PrefsKeys.isNewsPageKey('isLoggedIn'), false);
         expect(PrefsKeys.isNewsPageKey('other_key'), false);
         expect(PrefsKeys.isNewsPageKey('news_page'), false);
-        // Note: 'news_page_' retorna true pois startsWith aceita
       });
 
       test('filterNewsPageKeys deve filtrar apenas chaves de páginas', () {
@@ -86,7 +85,6 @@ void main() {
 
     group('Backward compatibility', () {
       test('deve manter valores exatos das chaves para compatibilidade com cache existente', () {
-        // Valores hardcoded para garantir que nunca mudem
         expect(PrefsKeys.isLoggedIn.key, 'isLoggedIn');
         expect(PrefsKeys.newsFavorites.key, 'news_favorites');
         expect(PrefsKeys.newsFavoritesData.key, 'news_favorites_data');
