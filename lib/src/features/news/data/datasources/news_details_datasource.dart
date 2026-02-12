@@ -22,7 +22,7 @@ class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
     }
 
     try {
-      final response = await dio.get('/news/$newsId/details');
+      final response = await dio.get('/news/$newsId');
 
       if (response.statusCode != 200 || response.data == null) {
         if (_shouldUseMock(response.data)) {

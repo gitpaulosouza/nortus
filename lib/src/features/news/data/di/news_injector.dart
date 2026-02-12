@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:nortus/src/features/news/data/cache/favorites_cache_service.dart';
 import 'package:nortus/src/features/news/data/cache/news_cache_service.dart';
 import 'package:nortus/src/features/news/data/datasources/news_datasource.dart';
 import 'package:nortus/src/features/news/data/datasources/news_details_datasource.dart';
@@ -14,6 +15,10 @@ Future<void> configureNewsDependencies(GetIt getIt) async {
 
   getIt.registerLazySingleton<NewsCacheService>(() => NewsCacheService());
 
+  getIt.registerLazySingleton<FavoritesCacheService>(
+    () => FavoritesCacheService(),
+  );
+
   getIt.registerLazySingleton<NewsDetailsDatasource>(
     () => NewsDetailsDatasourceImpl(getIt()),
   );
@@ -26,7 +31,7 @@ Future<void> configureNewsDependencies(GetIt getIt) async {
     () => NewsDetailsRepositoryImpl(getIt()),
   );
 
-  getIt.registerFactory<NewsBloc>(() => NewsBloc(getIt()));
+  getIt.registerFactory<NewsBloc>(() => NewsBloc(getIt(), getIt()));
 
   getIt.registerFactory<NewsDetailsBloc>(() => NewsDetailsBloc(getIt()));
 }
