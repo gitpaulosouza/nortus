@@ -14,7 +14,19 @@ class NewsRepository {
 
   Future<Either<AppError, NewsListResponseModel>> fetchNewsPage({
     required int page,
+    bool forceRefresh = false,
   }) async {
+    if (!forceRefresh) {
+      final cachedJson = await cacheService.getPage(page);
+      if (cachedJson != null) {
+        try {
+          final cachedResponse = NewsListResponseModel.fromJson(cachedJson);
+          return Right(cachedResponse);
+        } catch (_) {
+        }
+      }
+    }
+
     final result = await datasource.fetchNews(page: page);
     await Future.delayed(_requestDelay);
 
@@ -23,8 +35,11 @@ class NewsRepository {
         if (_shouldTryCache(error)) {
           final cachedJson = await cacheService.getPage(page);
           if (cachedJson != null) {
-            final cachedResponse = NewsListResponseModel.fromJson(cachedJson);
-            return Right(cachedResponse);
+            try {
+              final cachedResponse = NewsListResponseModel.fromJson(cachedJson);
+              return Right(cachedResponse);
+            } catch (_) {
+            }
           }
         }
 

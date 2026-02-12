@@ -22,6 +22,8 @@ void main() {
     mockDatasource = MockNewsDatasource();
     mockCacheService = MockNewsCacheService();
     repository = NewsRepository(mockDatasource, mockCacheService);
+    
+    when(() => mockCacheService.getPage(any())).thenAnswer((_) async => null);
   });
 
   NewsListResponseModel _createValidResponse({required int page}) {
@@ -95,7 +97,7 @@ void main() {
       final result = await repository.fetchNewsPage(page: page);
 
       expect(result.isRight, isTrue);
-      verify(() => mockDatasource.fetchNews(page: page)).called(1);
+      verifyNever(() => mockDatasource.fetchNews(page: page));
       verify(() => mockCacheService.getPage(page)).called(1);
       verifyNever(() => mockCacheService.savePage(any(), any()));
     });
@@ -103,11 +105,8 @@ void main() {
     test('deve retornar cache quando API retorna 429 (quota exceeded)',
         () async {
       const page = 2;
-      final error = NetworkError('quota exceeded');
       final cachedJson = {'pagination': {'page': 2, 'pageSize': 10, 'totalPages': 5, 'totalItems': 50}, 'data': []};
 
-      when(() => mockDatasource.fetchNews(page: page))
-          .thenAnswer((_) async => Left(error));
       when(() => mockCacheService.getPage(page))
           .thenAnswer((_) async => cachedJson);
 
@@ -145,7 +144,7 @@ void main() {
 
       expect(result.isLeft, isTrue);
       expect(result.left, equals(error));
-      verifyNever(() => mockCacheService.getPage(any()));
+      verify(() => mockCacheService.getPage(any())).called(1);
     });
   });
 
@@ -157,14 +156,13 @@ void main() {
 
       when(() => mockDatasource.fetchNews(page: page))
           .thenAnswer((_) async => Left(error));
-      when(() => mockCacheService.getPage(page)).thenAnswer((_) async => null);
 
       final result = await repository.fetchNewsPage(page: page);
 
       expect(result.isRight, isTrue);
       expect(result.right.data.length, equals(10));
       expect(result.right.pagination.page, equals(page));
-      verify(() => mockCacheService.getPage(page)).called(1);
+      verify(() => mockCacheService.getPage(page)).called(2);
     });
 
     test('deve retornar mock quando API 404 e cache vazio', () async {
@@ -286,49 +284,51 @@ void main() {
     });
 
     test(
-        'deve seguir ordem correta: API error → tentar cache → retornar cache',
+        'deve seguir ordem correta: cache primeiro → se vazio → API → erro → tentar cache novamente',
         () async {
       const page = 1;
       final error = NetworkError('Network error');
       final cachedJson = {'pagination': {'page': 1, 'pageSize': 10, 'totalPages': 5, 'totalItems': 50}, 'data': []};
       final calls = <String>[];
 
+      var cacheCallCount = 0;
+      when(() => mockCacheService.getPage(page)).thenAnswer((_) async {
+        calls.add('getPage');
+        cacheCallCount++;
+        return cacheCallCount == 1 ? null : cachedJson;
+      });
+
       when(() => mockDatasource.fetchNews(page: page)).thenAnswer((_) async {
         calls.add('fetchNews');
         return Left(error);
-      });
-
-      when(() => mockCacheService.getPage(page)).thenAnswer((_) async {
-        calls.add('getPage');
-        return cachedJson;
       });
 
       await repository.fetchNewsPage(page: page);
 
-      expect(calls, equals(['fetchNews', 'getPage']));
+      expect(calls, equals(['getPage', 'fetchNews', 'getPage']));
       verifyNever(() => mockCacheService.savePage(any(), any()));
     });
 
     test(
-        'deve seguir ordem: API error → cache null → usar mock quando quota exceeded',
+        'deve seguir ordem: cache vazio → API error → cache null → usar mock quando quota exceeded',
         () async {
       const page = 1;
       final error = NetworkError('quota exceeded');
       final calls = <String>[];
-
-      when(() => mockDatasource.fetchNews(page: page)).thenAnswer((_) async {
-        calls.add('fetchNews');
-        return Left(error);
-      });
 
       when(() => mockCacheService.getPage(page)).thenAnswer((_) async {
         calls.add('getPage');
         return null;
       });
 
+      when(() => mockDatasource.fetchNews(page: page)).thenAnswer((_) async {
+        calls.add('fetchNews');
+        return Left(error);
+      });
+
       final result = await repository.fetchNewsPage(page: page);
 
-      expect(calls, equals(['fetchNews', 'getPage']));
+      expect(calls, equals(['getPage', 'fetchNews', 'getPage']));
       expect(result.isRight, isTrue);
       expect(result.right.data.isNotEmpty, isTrue);
     });
@@ -350,6 +350,74 @@ void main() {
 
       verify(() => mockCacheService.savePage(1, any())).called(1);
       verify(() => mockCacheService.savePage(2, any())).called(1);
+    });
+  });
+
+  group('fetchNewsPage - Stale-While-Revalidate', () {
+    test('deve retornar cache imediatamente quando disponível (sem chamar API)', () async {
+      const page = 1;
+      final cachedResponse = _createValidResponse(page: page);
+      when(() => mockCacheService.getPage(page))
+          .thenAnswer((_) async => cachedResponse.toJson());
+
+      final result = await repository.fetchNewsPage(page: page);
+
+      expect(result.isRight, isTrue);
+      expect(result.right, isNotNull);
+      verify(() => mockCacheService.getPage(page)).called(1);
+      verifyNever(() => mockDatasource.fetchNews(page: page));
+    });
+
+    test('deve buscar da API quando não há cache disponível', () async {
+      const page = 1;
+      final apiResponse = _createValidResponse(page: page);
+      when(() => mockCacheService.getPage(page)).thenAnswer((_) async => null);
+      when(() => mockDatasource.fetchNews(page: page))
+          .thenAnswer((_) async => Right(apiResponse));
+      when(() => mockCacheService.savePage(page, any()))
+          .thenAnswer((_) async => {});
+
+      final result = await repository.fetchNewsPage(page: page);
+
+      expect(result.isRight, isTrue);
+      verify(() => mockCacheService.getPage(page)).called(1);
+      verify(() => mockDatasource.fetchNews(page: page)).called(1);
+      verify(() => mockCacheService.savePage(page, any())).called(1);
+    });
+
+    test('deve ignorar cache quando forceRefresh=true', () async {
+      const page = 1;
+      final cachedResponse = _createValidResponse(page: page);
+      final apiResponse = _createValidResponse(page: page);
+      when(() => mockCacheService.getPage(page))
+          .thenAnswer((_) async => cachedResponse.toJson());
+      when(() => mockDatasource.fetchNews(page: page))
+          .thenAnswer((_) async => Right(apiResponse));
+      when(() => mockCacheService.savePage(page, any()))
+          .thenAnswer((_) async => {});
+
+      final result = await repository.fetchNewsPage(page: page, forceRefresh: true);
+
+      expect(result.isRight, isTrue);
+      verifyNever(() => mockCacheService.getPage(page));
+      verify(() => mockDatasource.fetchNews(page: page)).called(1);
+      verify(() => mockCacheService.savePage(page, any())).called(1);
+    });
+
+    test('deve usar cache como fallback quando API falha (mesmo com forceRefresh)', () async {
+      const page = 1;
+      final cachedResponse = _createValidResponse(page: page);
+      final error = NetworkError('Network error');
+      when(() => mockCacheService.getPage(page))
+          .thenAnswer((_) async => cachedResponse.toJson());
+      when(() => mockDatasource.fetchNews(page: page))
+          .thenAnswer((_) async => Left(error));
+
+      final result = await repository.fetchNewsPage(page: page, forceRefresh: true);
+
+      expect(result.isRight, isTrue);
+      verify(() => mockDatasource.fetchNews(page: page)).called(1);
+      verify(() => mockCacheService.getPage(page)).called(1);
     });
   });
 }
