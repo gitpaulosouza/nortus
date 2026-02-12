@@ -1,14 +1,15 @@
-import 'package:dio/dio.dart';
 import 'package:either_dart/either.dart';
 import 'package:nortus/src/core/error/app_error.dart';
+import 'package:nortus/src/core/http/http_client.dart';
+import 'package:nortus/src/core/http/http_exception.dart';
 import 'package:nortus/src/features/news/data/datasources/news_details_datasource.dart';
 import 'package:nortus/src/features/news/data/models/news_details_model.dart';
 import 'package:nortus/src/features/news/mock/news_details_mock_factory.dart';
 
 class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
-  final Dio dio;
+  final HttpClient httpClient;
 
-  NewsDetailsDatasourceImpl(this.dio);
+  NewsDetailsDatasourceImpl(this.httpClient);
 
   @override
   Future<Either<AppError, NewsDetailsModel>> fetchNewsDetails(
@@ -19,7 +20,7 @@ class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
     }
 
     try {
-      final response = await dio.get('/news/$newsId');
+      final response = await httpClient.get('/news/$newsId');
 
       if (response.statusCode != 200 || response.data == null) {
         if (_shouldUseMock(response.data)) {
@@ -39,8 +40,8 @@ class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
         response.data as Map<String, dynamic>,
       );
       return Right(newsDetailsModel);
-    } on DioException catch (e) {
-      if (_shouldUseMock(e.response?.data ?? e.message)) {
+    } on HttpException catch (e) {
+      if (_shouldUseMock(e.data ?? e.message)) {
         return Right(NewsDetailsMockFactory.buildMock(newsId: newsId));
       }
       final errorMessage = _extractErrorMessage(e);
@@ -60,9 +61,9 @@ class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
         message.contains('wiremock');
   }
 
-  String _extractErrorMessage(DioException exception) {
+  String _extractErrorMessage(HttpException exception) {
     try {
-      final responseData = exception.response?.data;
+      final responseData = exception.data;
 
       if (responseData is Map<String, dynamic>) {
         final message = responseData['message'] as String?;
@@ -71,8 +72,8 @@ class NewsDetailsDatasourceImpl implements NewsDetailsDatasource {
         }
       }
 
-      if (exception.response?.data is String) {
-        final bodyMessage = exception.response?.data as String;
+      if (exception.data is String) {
+        final bodyMessage = exception.data as String;
         if (bodyMessage.contains('quota') ||
             bodyMessage.contains('exceeded') ||
             bodyMessage.contains('limite')) {

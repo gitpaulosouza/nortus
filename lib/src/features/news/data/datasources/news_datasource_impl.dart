@@ -1,13 +1,14 @@
-import 'package:dio/dio.dart';
 import 'package:either_dart/either.dart';
 import 'package:nortus/src/core/error/app_error.dart';
+import 'package:nortus/src/core/http/http_client.dart';
+import 'package:nortus/src/core/http/http_exception.dart';
 import 'package:nortus/src/features/news/data/datasources/news_datasource.dart';
 import 'package:nortus/src/features/news/data/models/news_list_response_model.dart';
 
 class NewsDatasourceImpl implements NewsDatasource {
-  NewsDatasourceImpl(this._dio);
+  NewsDatasourceImpl(this._httpClient);
 
-  final Dio _dio;
+  final HttpClient _httpClient;
 
   @override
   Future<Either<AppError, NewsListResponseModel>> fetchNews({
@@ -18,12 +19,15 @@ class NewsDatasourceImpl implements NewsDatasource {
     }
 
     try {
-      final response = await _dio.get('/news', queryParameters: {'page': page});
+      final response = await _httpClient.get(
+        '/news',
+        queryParameters: {'page': page},
+      );
 
       final model = _parseNewsListResponse(response.data);
       return Right(model);
-    } on DioException catch (e) {
-      return Left(_mapDioExceptionToAppError(e));
+    } on HttpException catch (e) {
+      return Left(_mapHttpExceptionToAppError(e));
     } catch (_) {
       return Left(
         UnknownError('Ops! Aconteceu alguma coisa, tente novamente.'),
@@ -38,14 +42,14 @@ class NewsDatasourceImpl implements NewsDatasource {
     return NewsListResponseModel.fromJson(data);
   }
 
-  AppError _mapDioExceptionToAppError(DioException e) {
+  AppError _mapHttpExceptionToAppError(HttpException e) {
     final message =
         _extractServerMessage(e) ?? 'Erro de rede. Tente novamente.';
     return NetworkError(message);
   }
 
-  String? _extractServerMessage(DioException e) {
-    final data = e.response?.data;
+  String? _extractServerMessage(HttpException e) {
+    final data = e.data;
 
     if (data is Map<String, dynamic>) {
       final errors = data['errors'];
